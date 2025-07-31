@@ -1,0 +1,277 @@
+# Task ID: 2
+# Title: Upgrade Webpack and related build tools
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Upgrade Webpack from v4 to v5 and update all related loaders and plugins to compatible versions
+# Details:
+1. Audit current Webpack setup:
+```bash
+npm ls webpack webpack-cli
+# Document current versions and configuration
+```
+
+2. Create a backup of current configuration:
+```bash
+cp webpack.config.js webpack.config.v4.backup.js
+cp package.json package.v4.backup.json
+cp package-lock.json package-lock.v4.backup.json
+```
+
+3. Upgrade Webpack core packages:
+```bash
+npm uninstall webpack webpack-cli webpack-dev-server
+npm install --save-dev webpack@^5.94.0 webpack-cli@^5.1.4 webpack-dev-server@^5.1.0
+```
+
+4. Update Webpack configuration for v5:
+```javascript
+// webpack.config.js
+module.exports = {
+  mode: process.env.NODE_ENV || 'development',
+  
+  // Entry points remain the same
+  entry: {
+    ui: './src/ui.tsx',
+    code: './src/code.ts'
+  },
+  
+  // Output configuration with contenthash for caching
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contenthash].js',
+    clean: true // Replaces clean-webpack-plugin
+  },
+  
+  // Module resolution
+  resolve: {
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    // Add fallbacks for Node.js core modules if needed
+    fallback: {
+      "path": false,
+      "fs": false
+    }
+  },
+  
+  // Update module rules for loaders
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        type: 'asset/resource' // New in Webpack 5
+      }
+    ]
+  },
+  
+  // Optimization settings
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          priority: 10
+        }
+      }
+    },
+    runtimeChunk: 'single',
+    moduleIds: 'deterministic' // For long-term caching
+  },
+  
+  // Development server configuration
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'dist')
+    },
+    compress: true,
+    port: 9000,
+    hot: true,
+    open: true
+  },
+  
+  // Cache configuration for faster rebuilds
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename]
+    }
+  },
+  
+  // Performance hints
+  performance: {
+    hints: process.env.NODE_ENV === 'production' ? 'warning' : false,
+    maxAssetSize: 512000,
+    maxEntrypointSize: 512000
+  }
+};
+```
+
+5. Update all Webpack loaders and plugins:
+```bash
+# Update TypeScript loader
+npm uninstall ts-loader
+npm install --save-dev ts-loader@^9.5.1
+
+# Update CSS loaders
+npm uninstall css-loader style-loader
+npm install --save-dev css-loader@^7.1.2 style-loader@^4.0.0
+
+# Update HTML plugin
+npm uninstall html-webpack-plugin
+npm install --save-dev html-webpack-plugin@^5.6.3
+
+# Remove deprecated plugins
+npm uninstall clean-webpack-plugin # No longer needed with output.clean
+```
+
+6. Update HTML Webpack Plugin configuration:
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+plugins: [
+  new HtmlWebpackPlugin({
+    template: './src/ui.html',
+    filename: 'ui.html',
+    chunks: ['ui'],
+    inject: 'body',
+    scriptLoading: 'defer'
+  })
+]
+```
+
+7. Handle breaking changes:
+   - Remove `node: { fs: 'empty' }` and use `resolve.fallback` instead
+   - Update any `raw-loader` usage to `asset/source` type
+   - Replace `file-loader` and `url-loader` with asset modules
+   - Update `devServer` configuration from v3 to v4 syntax
+   - Remove deprecated `webpack.NamedModulesPlugin` (now default)
+   - Update any custom plugins for Webpack 5 API changes
+
+8. Update build scripts in package.json:
+```json
+"scripts": {
+  "build": "webpack --mode production",
+  "dev": "webpack serve --mode development",
+  "watch": "webpack --watch --mode development",
+  "analyze": "webpack-bundle-analyzer dist/stats.json"
+}
+```
+
+9. Add Webpack 5 specific optimizations:
+```javascript
+// Enable persistent caching
+experiments: {
+  caching: true
+},
+
+// Tree shaking optimizations
+optimization: {
+  usedExports: true,
+  sideEffects: false
+}
+```
+
+10. Remove NODE_OPTIONS workaround:
+    - Remove `NODE_OPTIONS=--openssl-legacy-provider` from scripts
+    - This is no longer needed with Webpack 5
+
+# Test Strategy:
+1. Pre-upgrade verification:
+   - Run `npm run build` with Webpack 4 to ensure current build works
+   - Document bundle sizes and build times for comparison
+   - Save the generated output files for comparison
+
+2. Post-upgrade build testing:
+   - Run `npm run build` and verify it completes without errors
+   - Compare bundle sizes with Webpack 4 output
+   - Verify all expected files are generated in dist/
+   - Check that source maps are generated correctly
+
+3. Development server testing:
+   - Run `npm run dev` and verify webpack-dev-server starts
+   - Test hot module replacement (HMR) by making changes
+   - Verify that the development build loads in browser
+   - Check that proxy settings work if configured
+
+4. Loader compatibility testing:
+   - Verify TypeScript files compile correctly with ts-loader
+   - Test CSS imports and ensure styles are applied
+   - Check that image/asset imports work correctly
+   - Verify any custom loaders still function
+
+5. Plugin functionality testing:
+   - Confirm HtmlWebpackPlugin generates correct HTML
+   - Verify script tags have correct paths and attributes
+   - Test any other plugins for compatibility
+
+6. Bundle analysis:
+   - Install and run webpack-bundle-analyzer
+   - Compare bundle composition with Webpack 4
+   - Identify any unexpected dependencies or size increases
+   - Verify tree shaking is working correctly
+
+7. Performance testing:
+   - Measure initial build time and compare with Webpack 4
+   - Test incremental build times with --watch mode
+   - Verify filesystem cache improves rebuild times
+   - Check memory usage during builds
+
+8. Production build testing:
+   - Run production build with minification
+   - Verify contenthash works for cache busting
+   - Test that production bundles are optimized
+   - Check for any console errors in production mode
+
+9. Figma plugin integration testing:
+   - Load the plugin in Figma development mode
+   - Test all plugin functionality end-to-end
+   - Verify no runtime errors in Figma console
+   - Check that both UI and code bundles work correctly
+
+10. Regression testing:
+    - Run any existing tests
+    - Manually test critical user flows
+    - Verify no functionality has been broken
+    - Test in different environments (Windows, Mac, Linux)
+
+# Subtasks:
+## 2.1. Upgrade Webpack to v5 [pending]
+### Dependencies: None
+### Description: Update webpack and webpack-cli to latest v5 versions
+### Details:
+1. Create backup of current state
+2. Uninstall Webpack v4: npm uninstall webpack webpack-cli webpack-dev-server
+3. Install Webpack v5: npm install --save-dev webpack@^5.94.0 webpack-cli@^5.1.4 webpack-dev-server@^5.1.0
+4. Verify installation: npx webpack --version
+
+## 2.2. Update Webpack configuration [pending]
+### Dependencies: None
+### Description: Migrate webpack.config.js to Webpack 5 syntax and features
+### Details:
+1. Add output.clean: true to replace clean-webpack-plugin
+2. Update resolve.fallback for Node.js polyfills
+3. Replace deprecated options (node.fs, etc.)
+4. Update devServer configuration to v4 syntax
+5. Add cache.type: 'filesystem' for build performance
+6. Update optimization settings for better tree shaking
+
+## 2.3. Update loaders and plugins [pending]
+### Dependencies: None
+### Description: Update ts-loader, css-loader, style-loader, and html-webpack-plugin to Webpack 5 compatible versions
+### Details:
+1. Update ts-loader: npm install --save-dev ts-loader@^9.5.1
+2. Update CSS loaders: npm install --save-dev css-loader@^7.1.2 style-loader@^4.0.0
+3. Update html-webpack-plugin: npm install --save-dev html-webpack-plugin@^5.6.3
+4. Replace file-loader/url-loader with asset modules
+5. Remove deprecated plugins like clean-webpack-plugin
+

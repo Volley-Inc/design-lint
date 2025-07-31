@@ -1,0 +1,31 @@
+# Task ID: 6
+# Title: Modernize build scripts and tooling
+# Status: pending
+# Dependencies: None
+# Priority: low
+# Description: Update build scripts to use modern Node.js practices and remove hardcoded paths
+# Details:
+
+
+# Test Strategy:
+
+
+# Subtasks:
+## 6.1. Remove NODE_OPTIONS workaround [pending]
+### Dependencies: None
+### Description: Remove NODE_OPTIONS=--openssl-legacy-provider after upgrading Webpack
+### Details:
+
+
+## 6.2. Update package scripts [pending]
+### Dependencies: None
+### Description: Modernize npm scripts and add development helpers
+### Details:
+
+
+## 6.3. Add type checking script [pending]
+### Dependencies: None
+### Description: Add npm script for TypeScript type checking without building
+### Details:
+
+

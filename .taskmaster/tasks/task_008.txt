@@ -1,0 +1,443 @@
+# Task ID: 8
+# Title: Set Up Storybook for React Component Development and Documentation
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Implement Storybook 7+ with TypeScript support to develop and document React components in the Figma plugin. Create stories for all existing components and configure visual regression testing.
+# Details:
+1. Install Storybook and required dependencies:
+```bash
+npm install --save-dev @storybook/react @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/builder-webpack5 @storybook/manager-webpack5 @storybook/addon-a11y
+```
+
+2. Initialize Storybook with TypeScript support:
+```bash
+npx storybook init --type react --builder webpack5
+```
+
+3. Configure Storybook for the Figma plugin environment:
+   - Create a `.storybook/main.js` file with appropriate webpack configuration
+   - Set up TypeScript support in `.storybook/main.js`:
+   ```javascript
+   module.exports = {
+     stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+     addons: [
+       '@storybook/addon-links',
+       '@storybook/addon-essentials',
+       '@storybook/addon-interactions',
+       '@storybook/addon-a11y'
+     ],
+     framework: '@storybook/react',
+     core: {
+       builder: '@storybook/builder-webpack5'
+     },
+     typescript: {
+       check: true,
+       reactDocgen: 'react-docgen-typescript'
+     }
+   };
+   ```
+
+4. Create a `.storybook/preview.js` file to set up global decorators and parameters:
+   ```javascript
+   import '../src/ui.css'; // Import global styles
+
+   export const parameters = {
+     actions: { argTypesRegex: '^on[A-Z].*' },
+     controls: {
+       matchers: {
+         color: /(background|color)$/i,
+         date: /Date$/,
+       },
+     },
+   };
+   
+   // Add a decorator to simulate Figma plugin environment
+   export const decorators = [
+     (Story) => (
+       <div className="figma-plugin-ui">
+         <Story />
+       </div>
+     ),
+   ];
+   ```
+
+5. Create stories for all existing components:
+   - ErrorListItem.stories.tsx
+   - BulkErrorList.stories.tsx
+   - Panel.stories.tsx
+   - (and other components)
+
+6. Example story file structure:
+   ```typescript
+   // src/components/ErrorListItem.stories.tsx
+   import React from 'react';
+   import { ComponentStory, ComponentMeta } from '@storybook/react';
+   import { ErrorListItem } from './ErrorListItem';
+
+   export default {
+     title: 'Components/ErrorListItem',
+     component: ErrorListItem,
+     argTypes: {
+       error: { control: 'object' },
+       onFixClick: { action: 'fixed' }
+     },
+   } as ComponentMeta<typeof ErrorListItem>;
+
+   const Template: ComponentStory<typeof ErrorListItem> = (args) => <ErrorListItem {...args} />;
+
+   export const Default = Template.bind({});
+   Default.args = {
+     error: {
+       id: '1',
+       message: 'Missing alt text',
+       element: 'Image',
+       location: 'Frame 1'
+     }
+   };
+
+   export const WithLongMessage = Template.bind({});
+   WithLongMessage.args = {
+     error: {
+       id: '2',
+       message: 'This is a very long error message that should wrap to multiple lines when displayed in the UI',
+       element: 'Text',
+       location: 'Frame 2/Group 1'
+     }
+   };
+   ```
+
+7. Set up visual regression testing with Storybook:
+   ```bash
+   npm install --save-dev @storybook/addon-storyshots @storybook/addon-storyshots-puppeteer puppeteer
+   ```
+
+8. Configure visual regression tests:
+   ```typescript
+   // src/__tests__/storyshots.test.js
+   import initStoryshots from '@storybook/addon-storyshots';
+   import { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';
+
+   initStoryshots({
+     suite: 'Image storyshots',
+     test: imageSnapshot({
+       storybookUrl: 'http://localhost:6006',
+     }),
+   });
+   ```
+
+9. Add npm scripts to package.json:
+   ```json
+   "scripts": {
+     "storybook": "start-storybook -p 6006",
+     "build-storybook": "build-storybook",
+     "test-storybook": "test-storybook",
+     "visual-test": "jest --config=jest.visual.config.js"
+   }
+   ```
+
+10. Document component APIs using JSDoc comments and ensure they're properly displayed in Storybook.
+
+# Test Strategy:
+1. Verify Storybook installation and configuration:
+   - Run `npm run storybook` and confirm Storybook launches successfully at http://localhost:6006
+   - Check that TypeScript support is working by intentionally introducing a type error and verifying it's caught
+
+2. Validate component stories:
+   - Confirm all existing components have corresponding story files
+   - Verify each component displays correctly in various states
+   - Check that component props are properly documented and controllable via Storybook controls
+   - Test component interactions using Storybook's actions addon
+
+3. Test Figma plugin environment simulation:
+   - Verify components render in a way that matches their appearance in the Figma plugin
+   - Confirm any Figma-specific styling or behaviors are properly simulated
+
+4. Validate visual regression testing:
+   - Run `npm run visual-test` to generate baseline screenshots
+   - Make a small UI change and verify the test catches the visual difference
+   - Confirm the process for updating baseline images when intentional UI changes are made
+
+5. Documentation quality check:
+   - Review component documentation in Storybook for completeness
+   - Ensure prop descriptions, default values, and types are correctly displayed
+   - Verify that usage examples and notes are helpful for developers
+
+6. Cross-browser testing:
+   - Open Storybook in different browsers to ensure consistent rendering
+   - Check responsive behavior if applicable
+
+7. Integration test:
+   - Verify that the Storybook setup doesn't interfere with the actual Figma plugin build process
+   - Confirm that components can be developed in isolation in Storybook and then used in the plugin without issues
+
+# Subtasks:
+## 8.1. Install and Initialize Storybook with TypeScript Support [pending]
+### Dependencies: None
+### Description: Set up the initial Storybook environment with TypeScript support for the Figma plugin project
+### Details:
+1. Install Storybook and required dependencies:
+```bash
+npm install --save-dev @storybook/react @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/builder-webpack5 @storybook/manager-webpack5 @storybook/addon-a11y
+```
+
+2. Initialize Storybook with TypeScript support:
+```bash
+npx storybook init --type react --builder webpack5
+```
+
+3. Verify the installation created the basic .storybook directory structure
+
+4. Add npm scripts to package.json:
+```json
+"scripts": {
+  "storybook": "start-storybook -p 6006",
+  "build-storybook": "build-storybook"
+}
+```
+
+## 8.2. Configure Storybook for Figma Plugin Environment [pending]
+### Dependencies: 8.1
+### Description: Customize Storybook configuration to properly support the Figma plugin environment and TypeScript
+### Details:
+1. Update `.storybook/main.js` with appropriate webpack configuration:
+```javascript
+module.exports = {
+  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y'
+  ],
+  framework: '@storybook/react',
+  core: {
+    builder: '@storybook/builder-webpack5'
+  },
+  typescript: {
+    check: true,
+    reactDocgen: 'react-docgen-typescript'
+  }
+};
+```
+
+2. Create `.storybook/preview.js` to set up global decorators and parameters:
+```javascript
+import '../src/ui.css'; // Import global styles
+
+export const parameters = {
+  actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/,
+    },
+  },
+};
+
+// Add a decorator to simulate Figma plugin environment
+export const decorators = [
+  (Story) => (
+    <div className="figma-plugin-ui">
+      <Story />
+    </div>
+  ),
+];
+```
+
+3. Create a `.storybook/preview-head.html` file to include any necessary Figma plugin CSS variables or styles:
+```html
+<style>
+  /* Add Figma-specific CSS variables here */
+  :root {
+    --figma-color-bg: #ffffff;
+    --figma-color-text: #333333;
+    /* Add other Figma variables as needed */
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+</style>
+```
+
+## 8.3. Create Stories for Core UI Components [pending]
+### Dependencies: 8.2
+### Description: Develop Storybook stories for the main UI components of the Figma plugin
+### Details:
+1. Create story files for the following core components:
+   - ErrorListItem.stories.tsx
+   - BulkErrorList.stories.tsx
+   - Panel.stories.tsx
+
+2. Follow this structure for each story file:
+```typescript
+// src/components/ErrorListItem.stories.tsx
+import React from 'react';
+import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ErrorListItem } from './ErrorListItem';
+
+export default {
+  title: 'Components/ErrorListItem',
+  component: ErrorListItem,
+  argTypes: {
+    error: { control: 'object' },
+    onFixClick: { action: 'fixed' }
+  },
+} as ComponentMeta<typeof ErrorListItem>;
+
+const Template: ComponentStory<typeof ErrorListItem> = (args) => <ErrorListItem {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {
+  error: {
+    id: '1',
+    message: 'Missing alt text',
+    element: 'Image',
+    location: 'Frame 1'
+  }
+};
+
+export const WithLongMessage = Template.bind({});
+WithLongMessage.args = {
+  error: {
+    id: '2',
+    message: 'This is a very long error message that should wrap to multiple lines when displayed in the UI',
+    element: 'Text',
+    location: 'Frame 2/Group 1'
+  }
+};
+```
+
+3. Ensure each component has multiple story variants showing different states and prop combinations
+
+4. Add JSDoc comments to components to improve documentation in Storybook:
+```typescript
+/**
+ * Component for displaying individual accessibility errors
+ * @param {Object} props - Component props
+ * @param {Error} props.error - Error object containing details about the accessibility issue
+ * @param {Function} props.onFixClick - Callback function when the fix button is clicked
+ */
+export const ErrorListItem = ({ error, onFixClick }: ErrorListItemProps) => {
+  // Component implementation
+};
+```
+
+## 8.4. Create Stories for Additional UI Components [pending]
+### Dependencies: 8.3
+### Description: Develop Storybook stories for the remaining UI components of the Figma plugin
+### Details:
+1. Create story files for the following additional components:
+   - Button.stories.tsx
+   - Checkbox.stories.tsx
+   - Dropdown.stories.tsx
+   - ProgressIndicator.stories.tsx
+   - Any other remaining components
+
+2. Follow the same structure as in the previous subtask, ensuring each component has:
+   - Multiple variants showing different states
+   - Proper controls for interactive props
+   - Action handlers for events
+   - Comprehensive documentation
+
+3. Create a composite story that shows how multiple components work together:
+```typescript
+// src/components/AccessibilityPanel.stories.tsx
+import React from 'react';
+import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { AccessibilityPanel } from './AccessibilityPanel';
+
+export default {
+  title: 'Composite/AccessibilityPanel',
+  component: AccessibilityPanel,
+  parameters: {
+    layout: 'fullscreen',
+  },
+} as ComponentMeta<typeof AccessibilityPanel>;
+
+const Template: ComponentStory<typeof AccessibilityPanel> = (args) => <AccessibilityPanel {...args} />;
+
+export const WithErrors = Template.bind({});
+WithErrors.args = {
+  errors: [
+    { id: '1', message: 'Missing alt text', element: 'Image', location: 'Frame 1' },
+    { id: '2', message: 'Low contrast text', element: 'Text', location: 'Frame 2' }
+  ],
+  onFixAll: () => console.log('Fix all clicked')
+};
+
+export const Empty = Template.bind({});
+Empty.args = {
+  errors: [],
+  onFixAll: () => console.log('Fix all clicked')
+};
+```
+
+## 8.5. Set Up Visual Regression Testing [pending]
+### Dependencies: 8.4
+### Description: Configure visual regression testing for Storybook to ensure UI consistency
+### Details:
+1. Install visual regression testing dependencies:
+```bash
+npm install --save-dev @storybook/addon-storyshots @storybook/addon-storyshots-puppeteer puppeteer jest-image-snapshot
+```
+
+2. Create a Jest configuration file for visual tests:
+```javascript
+// jest.visual.config.js
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/**/*.visual.test.[jt]s?(x)'],
+};
+```
+
+3. Configure visual regression tests:
+```typescript
+// src/__tests__/storyshots.visual.test.js
+import initStoryshots from '@storybook/addon-storyshots';
+import { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';
+
+initStoryshots({
+  suite: 'Image storyshots',
+  test: imageSnapshot({
+    storybookUrl: 'http://localhost:6006',
+    customizePage: page => page.setViewport({ width: 1200, height: 800 }),
+  }),
+});
+```
+
+4. Add npm scripts to package.json:
+```json
+"scripts": {
+  "test-storybook": "test-storybook",
+  "visual-test": "start-storybook -p 6006 -s public --ci && jest --config=jest.visual.config.js",
+  "visual-test:update": "start-storybook -p 6006 -s public --ci && jest --config=jest.visual.config.js -u"
+}
+```
+
+5. Create a GitHub Actions workflow for visual testing:
+```yaml
+# .github/workflows/visual-testing.yml
+name: Visual Regression Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  visual-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run visual tests
+        run: npm run visual-test
+```
+

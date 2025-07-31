@@ -2,75 +2,6 @@
   "master": {
     "tasks": [
       {
-        "id": "0",
-        "title": "Set up comprehensive testing infrastructure",
-        "description": "Establish a complete testing framework with unit tests, integration tests, and coverage reporting before making any major changes to the codebase",
-        "status": "pending",
-        "priority": "critical",
-        "tags": [
-          "testing",
-          "infrastructure",
-          "quality"
-        ],
-        "dependencies": [],
-        "subtasks": [
-          {
-            "id": "0.1",
-            "title": "Choose and install testing framework",
-            "description": "Select Jest or Vitest for testing React/TypeScript, install with necessary dependencies including @testing-library/react, @testing-library/jest-dom",
-            "status": "pending"
-          },
-          {
-            "id": "0.2",
-            "title": "Configure testing environment",
-            "description": "Set up jest.config.js or vitest.config.js, configure for TypeScript, React, and Figma plugin environment mocking",
-            "status": "pending"
-          },
-          {
-            "id": "0.3",
-            "title": "Create test structure and utilities",
-            "description": "Set up test directories, create test utilities for mocking Figma API, create test helpers and fixtures",
-            "status": "pending"
-          },
-          {
-            "id": "0.4",
-            "title": "Write tests for critical linting functions",
-            "description": "Create comprehensive unit tests for lintingFunctions.ts covering all lint rules and edge cases",
-            "status": "pending"
-          },
-          {
-            "id": "0.5",
-            "title": "Write tests for controller logic",
-            "description": "Test controller.ts functions including error detection, ignore functionality, and Figma API interactions",
-            "status": "pending"
-          },
-          {
-            "id": "0.6",
-            "title": "Write tests for React components",
-            "description": "Create unit and integration tests for key components like BulkErrorList, ErrorListItem, and App",
-            "status": "pending"
-          },
-          {
-            "id": "0.7",
-            "title": "Set up coverage reporting",
-            "description": "Configure coverage collection with Istanbul/c8, set up coverage thresholds, add coverage script to package.json",
-            "status": "pending"
-          },
-          {
-            "id": "0.8",
-            "title": "Add test scripts and CI pipeline",
-            "description": "Add test, test:watch, and coverage scripts to package.json, create GitHub Actions workflow for automated testing",
-            "status": "pending"
-          },
-          {
-            "id": "0.9",
-            "title": "Document testing strategy",
-            "description": "Create testing documentation explaining how to write and run tests, testing best practices for Figma plugins",
-            "status": "pending"
-          }
-        ]
-      },
-      {
         "id": "1",
         "title": "Upgrade TypeScript to latest stable version",
         "description": "Upgrade TypeScript from 3.5.3 to latest stable version (5.x) and update tsconfig.json with modern configuration options including strict mode, ES modules, and proper type checking",
@@ -81,9 +12,9 @@
           "upgrade",
           "dependencies"
         ],
-        "dependencies": [
-          "0"
-        ],
+        "dependencies": [],
+        "details": "1. Backup current tsconfig.json and package-lock.json before making changes\n\n2. Update TypeScript dependency:\n```bash\nnpm uninstall typescript\nnpm install --save-dev typescript@^5.6.3\n```\n\n3. Update tsconfig.json with modern TypeScript 5.x configuration:\n```json\n{\n  \"compilerOptions\": {\n    // Type Checking\n    \"strict\": true,\n    \"noImplicitAny\": true,\n    \"strictNullChecks\": true,\n    \"strictFunctionTypes\": true,\n    \"strictBindCallApply\": true,\n    \"strictPropertyInitialization\": true,\n    \"noImplicitThis\": true,\n    \"alwaysStrict\": true,\n    \"noUnusedLocals\": true,\n    \"noUnusedParameters\": true,\n    \"noFallthroughCasesInSwitch\": true,\n    \"exactOptionalPropertyTypes\": true,\n    \"noImplicitReturns\": true,\n    \"noUncheckedIndexedAccess\": true,\n    \n    // Module Resolution\n    \"moduleResolution\": \"bundler\",\n    \"module\": \"ESNext\",\n    \"target\": \"ES2022\",\n    \"lib\": [\"ES2022\", \"DOM\", \"DOM.Iterable\"],\n    \"esModuleInterop\": true,\n    \"allowSyntheticDefaultImports\": true,\n    \"resolveJsonModule\": true,\n    \"isolatedModules\": true,\n    \n    // Emit\n    \"jsx\": \"react-jsx\",\n    \"outDir\": \"./dist\",\n    \"sourceMap\": true,\n    \"declaration\": true,\n    \"declarationMap\": true,\n    \"removeComments\": false,\n    \"importHelpers\": true,\n    \n    // Interop Constraints\n    \"forceConsistentCasingInFileNames\": true,\n    \"allowJs\": false,\n    \"skipLibCheck\": true,\n    \n    // Language and Environment\n    \"experimentalDecorators\": true,\n    \"emitDecoratorMetadata\": true,\n    \"useDefineForClassFields\": true,\n    \n    // Advanced\n    \"typeRoots\": [\"./node_modules/@types\", \"./src/types\"],\n    \"types\": [\"node\", \"react\", \"react-dom\"],\n    \"baseUrl\": \".\",\n    \"paths\": {\n      \"@/*\": [\"src/*\"]\n    }\n  },\n  \"include\": [\n    \"src/**/*\",\n    \"src/**/*.tsx\",\n    \"src/**/*.ts\"\n  ],\n  \"exclude\": [\n    \"node_modules\",\n    \"dist\",\n    \"build\",\n    \"**/*.spec.ts\",\n    \"**/*.test.ts\"\n  ]\n}\n```\n\n4. Update @types packages to be compatible with TypeScript 5.x:\n```bash\nnpm update @types/react @types/react-dom @types/node\n# Check for other @types packages in package.json and update them\nnpm ls | grep @types\n```\n\n5. Address breaking changes from TypeScript 3.5 to 5.x:\n   - The `jsx` option now uses \"react-jsx\" instead of \"react\" for React 17+\n   - `moduleResolution: \"bundler\"` is the new recommended option for modern bundlers\n   - `useDefineForClassFields` is now true by default\n   - Stricter type checking may reveal previously hidden errors\n   - Template literal types and other new features are available\n\n6. Create a migration script to help with the upgrade:\n```bash\n# Create a script to find potential issues\nnpx tsc --noEmit --strict\n```\n\n7. Common issues to watch for:\n   - Implicit any types that need explicit typing\n   - Null/undefined checks that are now enforced\n   - Index signature access that may return undefined\n   - React component prop types that need updating\n   - Import statements that may need adjusting\n\n8. Update build scripts in package.json if needed:\n```json\n\"scripts\": {\n  \"type-check\": \"tsc --noEmit\",\n  \"type-check:watch\": \"tsc --noEmit --watch\"\n}\n```",
+        "testStrategy": "1. Pre-upgrade verification:\n   - Run `npm run build` to ensure the project builds successfully before upgrade\n   - Document any existing TypeScript errors or warnings\n   - Create a git branch for the upgrade work\n\n2. Post-upgrade compilation test:\n   - Run `npx tsc --version` to verify TypeScript 5.x is installed\n   - Run `npx tsc --noEmit` to check for compilation errors without generating files\n   - Document all new errors introduced by the upgrade\n\n3. Strict mode testing:\n   - Temporarily set `\"strict\": false` and compile to establish baseline\n   - Enable strict mode and address errors incrementally:\n     - First enable `\"noImplicitAny\": true` and fix issues\n     - Then enable `\"strictNullChecks\": true` and fix issues\n     - Continue with other strict flags one by one\n   - Run `npm run type-check` after each change\n\n4. Module resolution testing:\n   - Verify all imports resolve correctly with new moduleResolution setting\n   - Check that path aliases (@/*) work as expected\n   - Test both relative and absolute imports\n\n5. React compatibility testing:\n   - Ensure React components compile with \"react-jsx\" transform\n   - Verify prop types are correctly inferred\n   - Check that event handlers have proper typing\n\n6. Build and bundle testing:\n   - Run the full build process: `npm run build`\n   - Verify the output in dist/ directory\n   - Check that source maps are generated correctly\n   - Ensure declaration files (.d.ts) are created if needed\n\n7. Runtime testing:\n   - Load the Figma plugin in development mode\n   - Test core functionality to ensure no runtime errors\n   - Verify that all UI components render correctly\n   - Check console for any TypeScript-related warnings\n\n8. IDE integration testing:\n   - Open the project in VS Code or preferred IDE\n   - Verify IntelliSense works correctly\n   - Check that go-to-definition works for all imports\n   - Ensure error highlighting matches tsc output\n\n9. Regression testing:\n   - Run any existing tests: `npm test`\n   - Manually test critical user flows\n   - Compare bundle size before and after upgrade\n   - Check for any performance impacts\n\n10. Documentation verification:\n    - Update README.md with new TypeScript version requirement\n    - Document any breaking changes encountered\n    - Create migration notes for team members",
         "subtasks": [
           {
             "id": "1.1",
@@ -116,28 +47,33 @@
           "build",
           "dependencies"
         ],
-        "dependencies": [
-          "0",
-          "1"
-        ],
+        "dependencies": [],
+        "details": "1. Audit current Webpack setup:\n```bash\nnpm ls webpack webpack-cli\n# Document current versions and configuration\n```\n\n2. Create a backup of current configuration:\n```bash\ncp webpack.config.js webpack.config.v4.backup.js\ncp package.json package.v4.backup.json\ncp package-lock.json package-lock.v4.backup.json\n```\n\n3. Upgrade Webpack core packages:\n```bash\nnpm uninstall webpack webpack-cli webpack-dev-server\nnpm install --save-dev webpack@^5.94.0 webpack-cli@^5.1.4 webpack-dev-server@^5.1.0\n```\n\n4. Update Webpack configuration for v5:\n```javascript\n// webpack.config.js\nmodule.exports = {\n  mode: process.env.NODE_ENV || 'development',\n  \n  // Entry points remain the same\n  entry: {\n    ui: './src/ui.tsx',\n    code: './src/code.ts'\n  },\n  \n  // Output configuration with contenthash for caching\n  output: {\n    path: path.resolve(__dirname, 'dist'),\n    filename: '[name].[contenthash].js',\n    clean: true // Replaces clean-webpack-plugin\n  },\n  \n  // Module resolution\n  resolve: {\n    extensions: ['.tsx', '.ts', '.jsx', '.js'],\n    // Add fallbacks for Node.js core modules if needed\n    fallback: {\n      \"path\": false,\n      \"fs\": false\n    }\n  },\n  \n  // Update module rules for loaders\n  module: {\n    rules: [\n      {\n        test: /\\.tsx?$/,\n        use: 'ts-loader',\n        exclude: /node_modules/\n      },\n      {\n        test: /\\.css$/,\n        use: ['style-loader', 'css-loader']\n      },\n      {\n        test: /\\.(png|jpg|gif|svg)$/,\n        type: 'asset/resource' // New in Webpack 5\n      }\n    ]\n  },\n  \n  // Optimization settings\n  optimization: {\n    splitChunks: {\n      chunks: 'all',\n      cacheGroups: {\n        vendor: {\n          test: /[\\\\/]node_modules[\\\\/]/,\n          name: 'vendors',\n          priority: 10\n        }\n      }\n    },\n    runtimeChunk: 'single',\n    moduleIds: 'deterministic' // For long-term caching\n  },\n  \n  // Development server configuration\n  devServer: {\n    static: {\n      directory: path.join(__dirname, 'dist')\n    },\n    compress: true,\n    port: 9000,\n    hot: true,\n    open: true\n  },\n  \n  // Cache configuration for faster rebuilds\n  cache: {\n    type: 'filesystem',\n    buildDependencies: {\n      config: [__filename]\n    }\n  },\n  \n  // Performance hints\n  performance: {\n    hints: process.env.NODE_ENV === 'production' ? 'warning' : false,\n    maxAssetSize: 512000,\n    maxEntrypointSize: 512000\n  }\n};\n```\n\n5. Update all Webpack loaders and plugins:\n```bash\n# Update TypeScript loader\nnpm uninstall ts-loader\nnpm install --save-dev ts-loader@^9.5.1\n\n# Update CSS loaders\nnpm uninstall css-loader style-loader\nnpm install --save-dev css-loader@^7.1.2 style-loader@^4.0.0\n\n# Update HTML plugin\nnpm uninstall html-webpack-plugin\nnpm install --save-dev html-webpack-plugin@^5.6.3\n\n# Remove deprecated plugins\nnpm uninstall clean-webpack-plugin # No longer needed with output.clean\n```\n\n6. Update HTML Webpack Plugin configuration:\n```javascript\nconst HtmlWebpackPlugin = require('html-webpack-plugin');\n\nplugins: [\n  new HtmlWebpackPlugin({\n    template: './src/ui.html',\n    filename: 'ui.html',\n    chunks: ['ui'],\n    inject: 'body',\n    scriptLoading: 'defer'\n  })\n]\n```\n\n7. Handle breaking changes:\n   - Remove `node: { fs: 'empty' }` and use `resolve.fallback` instead\n   - Update any `raw-loader` usage to `asset/source` type\n   - Replace `file-loader` and `url-loader` with asset modules\n   - Update `devServer` configuration from v3 to v4 syntax\n   - Remove deprecated `webpack.NamedModulesPlugin` (now default)\n   - Update any custom plugins for Webpack 5 API changes\n\n8. Update build scripts in package.json:\n```json\n\"scripts\": {\n  \"build\": \"webpack --mode production\",\n  \"dev\": \"webpack serve --mode development\",\n  \"watch\": \"webpack --watch --mode development\",\n  \"analyze\": \"webpack-bundle-analyzer dist/stats.json\"\n}\n```\n\n9. Add Webpack 5 specific optimizations:\n```javascript\n// Enable persistent caching\nexperiments: {\n  caching: true\n},\n\n// Tree shaking optimizations\noptimization: {\n  usedExports: true,\n  sideEffects: false\n}\n```\n\n10. Remove NODE_OPTIONS workaround:\n    - Remove `NODE_OPTIONS=--openssl-legacy-provider` from scripts\n    - This is no longer needed with Webpack 5",
+        "testStrategy": "1. Pre-upgrade verification:\n   - Run `npm run build` with Webpack 4 to ensure current build works\n   - Document bundle sizes and build times for comparison\n   - Save the generated output files for comparison\n\n2. Post-upgrade build testing:\n   - Run `npm run build` and verify it completes without errors\n   - Compare bundle sizes with Webpack 4 output\n   - Verify all expected files are generated in dist/\n   - Check that source maps are generated correctly\n\n3. Development server testing:\n   - Run `npm run dev` and verify webpack-dev-server starts\n   - Test hot module replacement (HMR) by making changes\n   - Verify that the development build loads in browser\n   - Check that proxy settings work if configured\n\n4. Loader compatibility testing:\n   - Verify TypeScript files compile correctly with ts-loader\n   - Test CSS imports and ensure styles are applied\n   - Check that image/asset imports work correctly\n   - Verify any custom loaders still function\n\n5. Plugin functionality testing:\n   - Confirm HtmlWebpackPlugin generates correct HTML\n   - Verify script tags have correct paths and attributes\n   - Test any other plugins for compatibility\n\n6. Bundle analysis:\n   - Install and run webpack-bundle-analyzer\n   - Compare bundle composition with Webpack 4\n   - Identify any unexpected dependencies or size increases\n   - Verify tree shaking is working correctly\n\n7. Performance testing:\n   - Measure initial build time and compare with Webpack 4\n   - Test incremental build times with --watch mode\n   - Verify filesystem cache improves rebuild times\n   - Check memory usage during builds\n\n8. Production build testing:\n   - Run production build with minification\n   - Verify contenthash works for cache busting\n   - Test that production bundles are optimized\n   - Check for any console errors in production mode\n\n9. Figma plugin integration testing:\n   - Load the plugin in Figma development mode\n   - Test all plugin functionality end-to-end\n   - Verify no runtime errors in Figma console\n   - Check that both UI and code bundles work correctly\n\n10. Regression testing:\n    - Run any existing tests\n    - Manually test critical user flows\n    - Verify no functionality has been broken\n    - Test in different environments (Windows, Mac, Linux)",
         "subtasks": [
           {
             "id": "2.1",
             "title": "Upgrade Webpack to v5",
             "description": "Update webpack and webpack-cli to latest v5 versions",
-            "status": "pending"
+            "status": "pending",
+            "details": "1. Create backup of current state\n2. Uninstall Webpack v4: npm uninstall webpack webpack-cli webpack-dev-server\n3. Install Webpack v5: npm install --save-dev webpack@^5.94.0 webpack-cli@^5.1.4 webpack-dev-server@^5.1.0\n4. Verify installation: npx webpack --version",
+            "testStrategy": "Run webpack --version to confirm v5 is installed. Try a basic build to ensure webpack runs without immediate errors."
           },
           {
             "id": "2.2",
             "title": "Update Webpack configuration",
             "description": "Migrate webpack.config.js to Webpack 5 syntax and features",
-            "status": "pending"
+            "status": "pending",
+            "details": "1. Add output.clean: true to replace clean-webpack-plugin\n2. Update resolve.fallback for Node.js polyfills\n3. Replace deprecated options (node.fs, etc.)\n4. Update devServer configuration to v4 syntax\n5. Add cache.type: 'filesystem' for build performance\n6. Update optimization settings for better tree shaking",
+            "testStrategy": "Run webpack in development and production modes. Verify no deprecation warnings appear and builds complete successfully."
           },
           {
             "id": "2.3",
             "title": "Update loaders and plugins",
             "description": "Update ts-loader, css-loader, style-loader, and html-webpack-plugin to Webpack 5 compatible versions",
-            "status": "pending"
+            "status": "pending",
+            "details": "1. Update ts-loader: npm install --save-dev ts-loader@^9.5.1\n2. Update CSS loaders: npm install --save-dev css-loader@^7.1.2 style-loader@^4.0.0\n3. Update html-webpack-plugin: npm install --save-dev html-webpack-plugin@^5.6.3\n4. Replace file-loader/url-loader with asset modules\n5. Remove deprecated plugins like clean-webpack-plugin",
+            "testStrategy": "Build the project and verify all assets (TypeScript, CSS, images) are processed correctly. Check that HTML files are generated with proper script tags."
           }
         ]
       },
@@ -152,10 +88,7 @@
           "eslint",
           "code-quality"
         ],
-        "dependencies": [
-          "0",
-          "1"
-        ],
+        "dependencies": [],
         "subtasks": [
           {
             "id": "3.1",
@@ -188,12 +121,7 @@
           "types",
           "code-quality"
         ],
-        "dependencies": [
-          "0",
-          "1",
-          "2",
-          "3"
-        ],
+        "dependencies": [],
         "subtasks": [
           {
             "id": "4.1",
@@ -232,11 +160,7 @@
           "dependencies",
           "upgrade"
         ],
-        "dependencies": [
-          "0",
-          "1",
-          "2"
-        ],
+        "dependencies": [],
         "subtasks": [
           {
             "id": "5.1",
@@ -269,10 +193,7 @@
           "scripts",
           "tooling"
         ],
-        "dependencies": [
-          "0",
-          "2"
-        ],
+        "dependencies": [],
         "subtasks": [
           {
             "id": "6.1",
@@ -307,11 +228,9 @@
           "react",
           "ui"
         ],
-        "dependencies": [
-          "0",
-          "1",
-          "5"
-        ],
+        "dependencies": [],
+        "details": "1. Initialize Storybook in the project:\n```bash\nnpx storybook@latest init\n# Choose 'react' as the framework\n# Choose 'webpack5' as the builder\n```\n\n2. Install additional dependencies for TypeScript support:\n```bash\nnpm install --save-dev @storybook/react-webpack5 @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/addon-a11y @storybook/testing-library\n```\n\n3. Configure Storybook main.js for the Figma plugin:\n```javascript\n// .storybook/main.js\nconst path = require('path');\n\nmodule.exports = {\n  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],\n  addons: [\n    '@storybook/addon-links',\n    '@storybook/addon-essentials',\n    '@storybook/addon-interactions',\n    '@storybook/addon-a11y'\n  ],\n  framework: {\n    name: '@storybook/react-webpack5',\n    options: {}\n  },\n  docs: {\n    autodocs: 'tag'\n  },\n  webpackFinal: async (config) => {\n    // Add TypeScript support\n    config.module.rules.push({\n      test: /\\.tsx?$/,\n      use: [\n        {\n          loader: 'ts-loader',\n          options: {\n            transpileOnly: true\n          }\n        }\n      ],\n      exclude: /node_modules/\n    });\n    \n    // Add path aliases\n    config.resolve.alias = {\n      ...config.resolve.alias,\n      '@': path.resolve(__dirname, '../src')\n    };\n    \n    // Handle Figma plugin globals\n    config.resolve.fallback = {\n      ...config.resolve.fallback,\n      'fs': false,\n      'path': false\n    };\n    \n    return config;\n  }\n};\n```\n\n4. Create preview configuration with Figma styling:\n```javascript\n// .storybook/preview.js\nimport '../src/ui.css';\n\nexport const parameters = {\n  actions: { argTypesRegex: '^on[A-Z].*' },\n  controls: {\n    matchers: {\n      color: /(background|color)$/i,\n      date: /Date$/,\n    },\n  },\n  backgrounds: {\n    default: 'figma',\n    values: [\n      {\n        name: 'figma',\n        value: '#f5f5f5'\n      },\n      {\n        name: 'figma-dark',\n        value: '#2c2c2c'\n      }\n    ]\n  }\n};\n\n// Add Figma plugin container decorator\nexport const decorators = [\n  (Story) => (\n    <div style={{\n      padding: '20px',\n      fontFamily: 'Inter, system-ui, sans-serif',\n      fontSize: '11px',\n      lineHeight: '16px',\n      color: 'var(--figma-color-text)'\n    }}>\n      <Story />\n    </div>\n  ),\n];\n```\n\n5. Create custom Figma theme:\n```javascript\n// .storybook/figma-theme.js\nimport { create } from '@storybook/theming/create';\n\nexport default create({\n  base: 'light',\n  brandTitle: 'Design Lint Storybook',\n  brandUrl: 'https://github.com/destefanis/design-lint',\n  brandImage: '/logo.png',\n  brandTarget: '_self',\n  \n  // Typography\n  fontBase: 'Inter, system-ui, sans-serif',\n  fontCode: 'SF Mono, Monaco, monospace',\n  \n  // Colors\n  colorPrimary: '#18a0fb',\n  colorSecondary: '#7b61ff',\n  \n  // UI\n  appBg: '#f5f5f5',\n  appContentBg: '#ffffff',\n  appBorderColor: '#e6e6e6',\n  appBorderRadius: 2,\n  \n  // Text colors\n  textColor: '#333333',\n  textInverseColor: '#ffffff',\n  \n  // Toolbar default and active colors\n  barTextColor: '#666666',\n  barSelectedColor: '#18a0fb',\n  barBg: '#ffffff',\n  \n  // Form colors\n  inputBg: '#ffffff',\n  inputBorder: '#e6e6e6',\n  inputTextColor: '#333333',\n  inputBorderRadius: 2\n});\n```\n\n6. Create example component story:\n```typescript\n// src/app/components/ErrorListItem.stories.tsx\nimport type { Meta, StoryObj } from '@storybook/react';\nimport { ErrorListItem } from './ErrorListItem';\n\nconst meta = {\n  title: 'Components/ErrorListItem',\n  component: ErrorListItem,\n  parameters: {\n    layout: 'padded',\n    docs: {\n      description: {\n        component: 'Displays individual design lint errors with options to navigate to or ignore them.'\n      }\n    }\n  },\n  tags: ['autodocs'],\n  argTypes: {\n    error: {\n      description: 'The error object containing details about the lint issue'\n    },\n    index: {\n      description: 'The index of this error in the list'\n    },\n    onIgnore: {\n      action: 'ignored',\n      description: 'Callback when the ignore button is clicked'\n    },\n    onSelect: {\n      action: 'selected',\n      description: 'Callback when the error is selected'\n    }\n  }\n} satisfies Meta<typeof ErrorListItem>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\nexport const Default: Story = {\n  args: {\n    error: {\n      type: 'MISSING_ALT_TEXT',\n      message: 'Image is missing alt text',\n      ruleName: 'Accessibility',\n      nodes: [{\n        id: '123:456',\n        name: 'Hero Image'\n      }]\n    },\n    index: 0\n  }\n};\n\nexport const LongMessage: Story = {\n  args: {\n    error: {\n      type: 'LOW_CONTRAST',\n      message: 'Text color #666666 on background #f0f0f0 has insufficient contrast ratio of 3.5:1. Minimum required is 4.5:1 for normal text.',\n      ruleName: 'Color Contrast',\n      nodes: [{\n        id: '789:012',\n        name: 'Body Text'\n      }]\n    },\n    index: 1\n  }\n};\n\nexport const MultipleNodes: Story = {\n  args: {\n    error: {\n      type: 'INCONSISTENT_SPACING',\n      message: 'Inconsistent spacing between elements',\n      ruleName: 'Layout',\n      nodes: [\n        { id: '111:111', name: 'Card 1' },\n        { id: '222:222', name: 'Card 2' },\n        { id: '333:333', name: 'Card 3' }\n      ]\n    },\n    index: 2\n  }\n};\n```\n\n7. Set up visual regression testing with Chromatic:\n```bash\n# Install Chromatic\nnpm install --save-dev chromatic\n\n# Add to package.json scripts\n\"chromatic\": \"npx chromatic --project-token=<your-token>\"\n```\n\n8. Configure GitHub Actions for Storybook:\n```yaml\n# .github/workflows/storybook.yml\nname: Storybook\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n        with:\n          fetch-depth: 0\n      - uses: actions/setup-node@v3\n        with:\n          node-version: '18'\n          cache: 'npm'\n      - run: npm ci\n      - run: npm run build-storybook\n      - uses: chromaui/action@v1\n        with:\n          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}\n          buildScriptName: build-storybook\n```\n\n9. Add Storybook scripts to package.json:\n```json\n\"scripts\": {\n  \"storybook\": \"storybook dev -p 6006\",\n  \"build-storybook\": \"storybook build\",\n  \"test-storybook\": \"test-storybook\",\n  \"chromatic\": \"chromatic --exit-zero-on-changes\"\n}\n```\n\n10. Create comprehensive documentation:\n```markdown\n# Storybook Style Guide\n\n## Component Story Structure\n- Each component should have a `.stories.tsx` file\n- Include multiple variants showing different states\n- Add JSDoc comments for better documentation\n- Use Controls addon for interactive props\n- Include accessibility testing\n\n## Naming Conventions\n- Story names should be descriptive: Default, Loading, Error, Empty\n- Use folders to organize: Components/, Layouts/, Forms/\n\n## Testing Requirements\n- All stories must pass accessibility checks\n- Visual regression tests via Chromatic\n- Interaction tests for user flows\n```",
+        "testStrategy": "1. Installation verification:\n   - Run `npm run storybook` and verify it starts on http://localhost:6006\n   - Check that the Storybook UI loads without errors\n   - Verify TypeScript files are being compiled correctly\n\n2. Component story testing:\n   - Create stories for at least 3 different components\n   - Verify each story renders correctly\n   - Test that Controls addon allows prop manipulation\n   - Ensure Actions addon logs events properly\n\n3. Figma plugin environment testing:\n   - Verify components render with Figma-appropriate styling\n   - Check that CSS variables are applied correctly\n   - Test responsive behavior at Figma plugin dimensions\n   - Ensure no console errors related to missing globals\n\n4. TypeScript integration:\n   - Verify type checking works in stories\n   - Test that component props are properly typed\n   - Check that auto-generated docs show correct types\n   - Ensure IntelliSense works in story files\n\n5. Addon functionality:\n   - Test Controls: modify props and see updates\n   - Test Actions: verify callbacks are logged\n   - Test A11y: run accessibility checks\n   - Test Viewport: check responsive views\n   - Test Docs: verify auto-documentation\n\n6. Build testing:\n   - Run `npm run build-storybook`\n   - Verify static build completes successfully\n   - Test the built version by serving locally\n   - Check bundle size is reasonable\n\n7. Visual regression testing:\n   - Set up Chromatic and run initial baseline\n   - Make a small UI change and verify it's detected\n   - Test the approval workflow\n   - Verify GitHub integration works\n\n8. Performance testing:\n   - Measure Storybook startup time\n   - Check story switching performance\n   - Monitor memory usage with many stories\n   - Test with large component trees\n\n9. Cross-browser testing:\n   - Test in Chrome, Firefox, Safari, Edge\n   - Verify all stories render consistently\n   - Check for any browser-specific issues\n\n10. Developer experience:\n    - Test hot module replacement\n    - Verify error messages are helpful\n    - Check that the search function works\n    - Test keyboard navigation",
         "subtasks": [
           {
             "id": "7.1",
@@ -370,7 +289,7 @@
         ]
       },
       {
-        "id": 8,
+        "id": "8",
         "title": "Set Up Storybook for React Component Development and Documentation",
         "description": "Implement Storybook 7+ with TypeScript support to develop and document React components in the Figma plugin. Create stories for all existing components and configure visual regression testing.",
         "details": "1. Install Storybook and required dependencies:\n```bash\nnpm install --save-dev @storybook/react @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/builder-webpack5 @storybook/manager-webpack5 @storybook/addon-a11y\n```\n\n2. Initialize Storybook with TypeScript support:\n```bash\nnpx storybook init --type react --builder webpack5\n```\n\n3. Configure Storybook for the Figma plugin environment:\n   - Create a `.storybook/main.js` file with appropriate webpack configuration\n   - Set up TypeScript support in `.storybook/main.js`:\n   ```javascript\n   module.exports = {\n     stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],\n     addons: [\n       '@storybook/addon-links',\n       '@storybook/addon-essentials',\n       '@storybook/addon-interactions',\n       '@storybook/addon-a11y'\n     ],\n     framework: '@storybook/react',\n     core: {\n       builder: '@storybook/builder-webpack5'\n     },\n     typescript: {\n       check: true,\n       reactDocgen: 'react-docgen-typescript'\n     }\n   };\n   ```\n\n4. Create a `.storybook/preview.js` file to set up global decorators and parameters:\n   ```javascript\n   import '../src/ui.css'; // Import global styles\n\n   export const parameters = {\n     actions: { argTypesRegex: '^on[A-Z].*' },\n     controls: {\n       matchers: {\n         color: /(background|color)$/i,\n         date: /Date$/,\n       },\n     },\n   };\n   \n   // Add a decorator to simulate Figma plugin environment\n   export const decorators = [\n     (Story) => (\n       <div className=\"figma-plugin-ui\">\n         <Story />\n       </div>\n     ),\n   ];\n   ```\n\n5. Create stories for all existing components:\n   - ErrorListItem.stories.tsx\n   - BulkErrorList.stories.tsx\n   - Panel.stories.tsx\n   - (and other components)\n\n6. Example story file structure:\n   ```typescript\n   // src/components/ErrorListItem.stories.tsx\n   import React from 'react';\n   import { ComponentStory, ComponentMeta } from '@storybook/react';\n   import { ErrorListItem } from './ErrorListItem';\n\n   export default {\n     title: 'Components/ErrorListItem',\n     component: ErrorListItem,\n     argTypes: {\n       error: { control: 'object' },\n       onFixClick: { action: 'fixed' }\n     },\n   } as ComponentMeta<typeof ErrorListItem>;\n\n   const Template: ComponentStory<typeof ErrorListItem> = (args) => <ErrorListItem {...args} />;\n\n   export const Default = Template.bind({});\n   Default.args = {\n     error: {\n       id: '1',\n       message: 'Missing alt text',\n       element: 'Image',\n       location: 'Frame 1'\n     }\n   };\n\n   export const WithLongMessage = Template.bind({});\n   WithLongMessage.args = {\n     error: {\n       id: '2',\n       message: 'This is a very long error message that should wrap to multiple lines when displayed in the UI',\n       element: 'Text',\n       location: 'Frame 2/Group 1'\n     }\n   };\n   ```\n\n7. Set up visual regression testing with Storybook:\n   ```bash\n   npm install --save-dev @storybook/addon-storyshots @storybook/addon-storyshots-puppeteer puppeteer\n   ```\n\n8. Configure visual regression tests:\n   ```typescript\n   // src/__tests__/storyshots.test.js\n   import initStoryshots from '@storybook/addon-storyshots';\n   import { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';\n\n   initStoryshots({\n     suite: 'Image storyshots',\n     test: imageSnapshot({\n       storybookUrl: 'http://localhost:6006',\n     }),\n   });\n   ```\n\n9. Add npm scripts to package.json:\n   ```json\n   \"scripts\": {\n     \"storybook\": \"start-storybook -p 6006\",\n     \"build-storybook\": \"build-storybook\",\n     \"test-storybook\": \"test-storybook\",\n     \"visual-test\": \"jest --config=jest.visual.config.js\"\n   }\n   ```\n\n10. Document component APIs using JSDoc comments and ensure they're properly displayed in Storybook.",
@@ -380,7 +299,7 @@
         "priority": "medium",
         "subtasks": [
           {
-            "id": 1,
+            "id": "8.1",
             "title": "Install and Initialize Storybook with TypeScript Support",
             "description": "Set up the initial Storybook environment with TypeScript support for the Figma plugin project",
             "dependencies": [],
@@ -389,7 +308,7 @@
             "testStrategy": "Run `npm run storybook` and verify that Storybook launches successfully at http://localhost:6006 with the default welcome page"
           },
           {
-            "id": 2,
+            "id": "8.2",
             "title": "Configure Storybook for Figma Plugin Environment",
             "description": "Customize Storybook configuration to properly support the Figma plugin environment and TypeScript",
             "dependencies": [
@@ -400,7 +319,7 @@
             "testStrategy": "1. Verify TypeScript support by intentionally introducing a type error in a story file and confirming it's caught\n2. Check that the Figma plugin styling is properly applied to components in Storybook"
           },
           {
-            "id": 3,
+            "id": "8.3",
             "title": "Create Stories for Core UI Components",
             "description": "Develop Storybook stories for the main UI components of the Figma plugin",
             "dependencies": [
@@ -411,7 +330,7 @@
             "testStrategy": "1. Verify that all stories render correctly in Storybook\n2. Test interactive components by using Storybook's actions addon to confirm events are triggered\n3. Check that component documentation is properly displayed in the Docs tab"
           },
           {
-            "id": 4,
+            "id": "8.4",
             "title": "Create Stories for Additional UI Components",
             "description": "Develop Storybook stories for the remaining UI components of the Figma plugin",
             "dependencies": [
@@ -422,7 +341,7 @@
             "testStrategy": "1. Verify all stories render correctly in Storybook\n2. Test responsive behavior by using Storybook's viewport addon to view components at different screen sizes\n3. Use Storybook's accessibility addon to check for accessibility issues in the components"
           },
           {
-            "id": 5,
+            "id": "8.5",
             "title": "Set Up Visual Regression Testing",
             "description": "Configure visual regression testing for Storybook to ensure UI consistency",
             "dependencies": [
@@ -435,7 +354,7 @@
         ]
       },
       {
-        "id": 9,
+        "id": "9",
         "title": "Set Up Comprehensive Testing Infrastructure",
         "description": "Establish a complete testing framework with unit tests, integration tests, and coverage reporting to ensure code quality throughout the modernization process.",
         "details": "1. Install testing libraries and dependencies:\n```bash\nnpm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom ts-jest msw jest-coverage-reporter\n```\n\n2. Configure Jest for TypeScript support:\n   - Create a `jest.config.js` file with appropriate settings:\n```javascript\nmodule.exports = {\n  preset: 'ts-jest',\n  testEnvironment: 'jsdom',\n  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],\n  moduleNameMapper: {\n    '\\\\.(css|less|scss|sass)$': 'identity-obj-proxy',\n    '^@/(.*)$': '<rootDir>/src/$1'\n  },\n  collectCoverageFrom: [\n    'src/**/*.{js,jsx,ts,tsx}',\n    '!src/**/*.stories.{js,jsx,ts,tsx}',\n    '!src/**/*.d.ts'\n  ],\n  coverageThreshold: {\n    global: {\n      branches: 70,\n      functions: 70,\n      lines: 70,\n      statements: 70\n    }\n  }\n};\n```\n\n3. Create a Jest setup file (`jest.setup.js`):\n```javascript\nimport '@testing-library/jest-dom';\n```\n\n4. Set up Mock Service Worker (MSW) for API mocking:\n   - Create a `src/mocks` directory\n   - Set up handlers and server configuration for simulating API responses\n\n5. Configure integration with Storybook:\n   - Install required packages:\n   ```bash\n   npm install --save-dev @storybook/testing-react @storybook/jest\n   ```\n   - Create utility functions to import stories into tests\n\n6. Set up GitHub Actions workflow for continuous testing:\n   - Create `.github/workflows/test.yml` to run tests on pull requests and main branch commits\n   - Configure coverage reporting and PR comments\n\n7. Add npm scripts to package.json:\n```json\n\"scripts\": {\n  \"test\": \"jest\",\n  \"test:watch\": \"jest --watch\",\n  \"test:coverage\": \"jest --coverage\",\n  \"test:ci\": \"jest --ci --coverage\"\n}\n```\n\n8. Create documentation for testing standards:\n   - Document testing patterns and best practices\n   - Provide examples for component, hook, and utility testing\n   - Define guidelines for test coverage requirements",
@@ -445,7 +364,7 @@
         "priority": "medium",
         "subtasks": [
           {
-            "id": 1,
+            "id": "9.1",
             "title": "Install and Configure Jest with TypeScript Support",
             "description": "Set up the foundational testing environment by installing necessary dependencies and configuring Jest to work with TypeScript.",
             "dependencies": [],
@@ -454,7 +373,7 @@
             "testStrategy": "Run a basic test to ensure Jest executes correctly with TypeScript support by creating a simple component test that imports TypeScript types."
           },
           {
-            "id": 2,
+            "id": "9.2",
             "title": "Set Up Mock Service Worker for API Testing",
             "description": "Configure Mock Service Worker (MSW) to simulate API responses for integration testing without actual backend dependencies.",
             "dependencies": [
@@ -465,7 +384,7 @@
             "testStrategy": "Create a test that verifies MSW correctly intercepts API calls and returns mocked responses. Test both successful and error responses."
           },
           {
-            "id": 3,
+            "id": "9.3",
             "title": "Implement Unit Testing Framework with Example Tests",
             "description": "Create the structure and examples for unit testing components, hooks, and utility functions to establish testing patterns.",
             "dependencies": [
@@ -476,7 +395,7 @@
             "testStrategy": "Verify tests run successfully and follow best practices by checking that they test behavior rather than implementation details. Ensure tests are readable and maintainable."
           },
           {
-            "id": 4,
+            "id": "9.4",
             "title": "Set Up Integration Testing Framework",
             "description": "Establish integration testing capabilities to test interactions between components and with backend services.",
             "dependencies": [
@@ -488,7 +407,7 @@
             "testStrategy": "Create an end-to-end test flow that verifies multiple components work together correctly, including form submissions, navigation, and data fetching with mocked APIs."
           },
           {
-            "id": 5,
+            "id": "9.5",
             "title": "Configure CI/CD Integration and Coverage Reporting",
             "description": "Set up continuous integration testing and coverage reporting to ensure code quality is maintained throughout development.",
             "dependencies": [
@@ -504,7 +423,7 @@
     ],
     "metadata": {
       "created": "2025-07-30T23:42:39.459Z",
-      "updated": "2025-07-31T00:24:24.973Z",
+      "updated": "2025-07-31T00:37:45.000Z",
       "description": "Tasks for upgrading and modernizing the Design Lint Figma plugin TypeScript codebase"
     }
   }

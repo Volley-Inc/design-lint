@@ -1,0 +1,164 @@
+# Task ID: 9
+# Title: Set Up Comprehensive Testing Infrastructure
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Establish a complete testing framework with unit tests, integration tests, and coverage reporting to ensure code quality throughout the modernization process.
+# Details:
+1. Install testing libraries and dependencies:
+```bash
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom ts-jest msw jest-coverage-reporter
+```
+
+2. Configure Jest for TypeScript support:
+   - Create a `jest.config.js` file with appropriate settings:
+```javascript
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@/(.*)$': '<rootDir>/src/$1'
+  },
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts'
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70
+    }
+  }
+};
+```
+
+3. Create a Jest setup file (`jest.setup.js`):
+```javascript
+import '@testing-library/jest-dom';
+```
+
+4. Set up Mock Service Worker (MSW) for API mocking:
+   - Create a `src/mocks` directory
+   - Set up handlers and server configuration for simulating API responses
+
+5. Configure integration with Storybook:
+   - Install required packages:
+   ```bash
+   npm install --save-dev @storybook/testing-react @storybook/jest
+   ```
+   - Create utility functions to import stories into tests
+
+6. Set up GitHub Actions workflow for continuous testing:
+   - Create `.github/workflows/test.yml` to run tests on pull requests and main branch commits
+   - Configure coverage reporting and PR comments
+
+7. Add npm scripts to package.json:
+```json
+"scripts": {
+  "test": "jest",
+  "test:watch": "jest --watch",
+  "test:coverage": "jest --coverage",
+  "test:ci": "jest --ci --coverage"
+}
+```
+
+8. Create documentation for testing standards:
+   - Document testing patterns and best practices
+   - Provide examples for component, hook, and utility testing
+   - Define guidelines for test coverage requirements
+
+# Test Strategy:
+1. Verify testing environment setup:
+   - Run `npm run test` and confirm tests execute without errors
+   - Check that TypeScript integration works by writing a simple test with TypeScript syntax
+   - Verify coverage reporting generates accurate reports
+
+2. Test the unit testing framework:
+   - Create sample unit tests for existing components
+   - Verify that DOM testing works correctly with @testing-library/react
+   - Confirm that component rendering, user interactions, and state changes can be tested
+
+3. Validate integration testing capabilities:
+   - Set up and test API mocking with MSW
+   - Create a test that simulates a complete user flow across multiple components
+   - Verify that complex interactions can be tested effectively
+
+4. Test coverage reporting:
+   - Run `npm run test:coverage` and verify the coverage report is generated
+   - Check that the report correctly identifies covered and uncovered code
+   - Confirm that coverage thresholds are enforced
+
+5. Verify CI integration:
+   - Push a commit to a test branch and confirm that GitHub Actions runs the tests
+   - Verify that test failures properly block PR merges
+   - Check that coverage reports are correctly attached to PRs
+
+6. Validate Storybook integration:
+   - Confirm that components can be imported from Storybook into tests
+   - Verify that Storybook stories can be rendered and tested programmatically
+
+# Subtasks:
+## 9.1. Install and Configure Jest with TypeScript Support [pending]
+### Dependencies: None
+### Description: Set up the foundational testing environment by installing necessary dependencies and configuring Jest to work with TypeScript.
+### Details:
+1. Install testing libraries with npm: `npm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom ts-jest jest-coverage-reporter`
+2. Create jest.config.js with TypeScript support as specified in the task details
+3. Create jest.setup.js file with the import for @testing-library/jest-dom
+4. Add test scripts to package.json including test, test:watch, test:coverage, and test:ci commands
+5. Create a simple test file to verify the setup works correctly
+
+## 9.2. Set Up Mock Service Worker for API Testing [pending]
+### Dependencies: 9.1
+### Description: Configure Mock Service Worker (MSW) to simulate API responses for integration testing without actual backend dependencies.
+### Details:
+1. Install MSW if not already installed: `npm install --save-dev msw`
+2. Create a src/mocks directory structure
+3. Create a src/mocks/handlers.ts file to define API mocking patterns
+4. Set up a src/mocks/server.ts file to configure the MSW server
+5. Create a src/mocks/browser.ts file for browser-based testing
+6. Update jest.setup.js to initialize and clean up the MSW server for tests
+7. Create example API mocks for critical endpoints
+
+## 9.3. Implement Unit Testing Framework with Example Tests [pending]
+### Dependencies: 9.1
+### Description: Create the structure and examples for unit testing components, hooks, and utility functions to establish testing patterns.
+### Details:
+1. Create a src/__tests__ directory structure that mirrors the src directory
+2. Implement example component tests using React Testing Library
+3. Create example hook tests demonstrating proper testing of custom hooks
+4. Add utility function tests showing pure function testing approaches
+5. Document testing patterns in each example with detailed comments
+6. Ensure tests use proper TypeScript typing
+7. Implement snapshot testing examples where appropriate
+
+## 9.4. Set Up Integration Testing Framework [pending]
+### Dependencies: 9.2, 9.3
+### Description: Establish integration testing capabilities to test interactions between components and with backend services.
+### Details:
+1. Create a src/__integration_tests__ directory for integration tests
+2. Set up test utilities for rendering connected components with providers
+3. Configure user event for simulating user interactions
+4. Create helper functions for common testing patterns
+5. Implement example integration tests that demonstrate component interaction
+6. Set up MSW handlers specifically for integration test scenarios
+7. Document integration testing approach and best practices
+
+## 9.5. Configure CI/CD Integration and Coverage Reporting [pending]
+### Dependencies: 9.3, 9.4
+### Description: Set up continuous integration testing and coverage reporting to ensure code quality is maintained throughout development.
+### Details:
+1. Create .github/workflows/test.yml file for GitHub Actions
+2. Configure the workflow to run tests on pull requests and main branch commits
+3. Set up coverage reporting in the CI pipeline
+4. Configure coverage thresholds as specified in the jest.config.js
+5. Set up PR comments with test results and coverage information
+6. Create documentation for the testing standards including coverage requirements
+7. Add a coverage badge to the README.md
+8. Set up Storybook integration with testing using @storybook/testing-react and @storybook/jest
+

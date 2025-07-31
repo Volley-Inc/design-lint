@@ -1,0 +1,429 @@
+# Task ID: 7
+# Title: Add Storybook for component development
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Set up Storybook 7+ for isolated React component development, documentation, and visual testing. This will improve development workflow and component reliability.
+# Details:
+1. Initialize Storybook in the project:
+```bash
+npx storybook@latest init
+# Choose 'react' as the framework
+# Choose 'webpack5' as the builder
+```
+
+2. Install additional dependencies for TypeScript support:
+```bash
+npm install --save-dev @storybook/react-webpack5 @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/addon-a11y @storybook/testing-library
+```
+
+3. Configure Storybook main.js for the Figma plugin:
+```javascript
+// .storybook/main.js
+const path = require('path');
+
+module.exports = {
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y'
+  ],
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {}
+  },
+  docs: {
+    autodocs: 'tag'
+  },
+  webpackFinal: async (config) => {
+    // Add TypeScript support
+    config.module.rules.push({
+      test: /\.tsx?$/,
+      use: [
+        {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true
+          }
+        }
+      ],
+      exclude: /node_modules/
+    });
+    
+    // Add path aliases
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, '../src')
+    };
+    
+    // Handle Figma plugin globals
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      'fs': false,
+      'path': false
+    };
+    
+    return config;
+  }
+};
+```
+
+4. Create preview configuration with Figma styling:
+```javascript
+// .storybook/preview.js
+import '../src/ui.css';
+
+export const parameters = {
+  actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/,
+    },
+  },
+  backgrounds: {
+    default: 'figma',
+    values: [
+      {
+        name: 'figma',
+        value: '#f5f5f5'
+      },
+      {
+        name: 'figma-dark',
+        value: '#2c2c2c'
+      }
+    ]
+  }
+};
+
+// Add Figma plugin container decorator
+export const decorators = [
+  (Story) => (
+    <div style={{
+      padding: '20px',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: '11px',
+      lineHeight: '16px',
+      color: 'var(--figma-color-text)'
+    }}>
+      <Story />
+    </div>
+  ),
+];
+```
+
+5. Create custom Figma theme:
+```javascript
+// .storybook/figma-theme.js
+import { create } from '@storybook/theming/create';
+
+export default create({
+  base: 'light',
+  brandTitle: 'Design Lint Storybook',
+  brandUrl: 'https://github.com/destefanis/design-lint',
+  brandImage: '/logo.png',
+  brandTarget: '_self',
+  
+  // Typography
+  fontBase: 'Inter, system-ui, sans-serif',
+  fontCode: 'SF Mono, Monaco, monospace',
+  
+  // Colors
+  colorPrimary: '#18a0fb',
+  colorSecondary: '#7b61ff',
+  
+  // UI
+  appBg: '#f5f5f5',
+  appContentBg: '#ffffff',
+  appBorderColor: '#e6e6e6',
+  appBorderRadius: 2,
+  
+  // Text colors
+  textColor: '#333333',
+  textInverseColor: '#ffffff',
+  
+  // Toolbar default and active colors
+  barTextColor: '#666666',
+  barSelectedColor: '#18a0fb',
+  barBg: '#ffffff',
+  
+  // Form colors
+  inputBg: '#ffffff',
+  inputBorder: '#e6e6e6',
+  inputTextColor: '#333333',
+  inputBorderRadius: 2
+});
+```
+
+6. Create example component story:
+```typescript
+// src/app/components/ErrorListItem.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { ErrorListItem } from './ErrorListItem';
+
+const meta = {
+  title: 'Components/ErrorListItem',
+  component: ErrorListItem,
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component: 'Displays individual design lint errors with options to navigate to or ignore them.'
+      }
+    }
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    error: {
+      description: 'The error object containing details about the lint issue'
+    },
+    index: {
+      description: 'The index of this error in the list'
+    },
+    onIgnore: {
+      action: 'ignored',
+      description: 'Callback when the ignore button is clicked'
+    },
+    onSelect: {
+      action: 'selected',
+      description: 'Callback when the error is selected'
+    }
+  }
+} satisfies Meta<typeof ErrorListItem>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    error: {
+      type: 'MISSING_ALT_TEXT',
+      message: 'Image is missing alt text',
+      ruleName: 'Accessibility',
+      nodes: [{
+        id: '123:456',
+        name: 'Hero Image'
+      }]
+    },
+    index: 0
+  }
+};
+
+export const LongMessage: Story = {
+  args: {
+    error: {
+      type: 'LOW_CONTRAST',
+      message: 'Text color #666666 on background #f0f0f0 has insufficient contrast ratio of 3.5:1. Minimum required is 4.5:1 for normal text.',
+      ruleName: 'Color Contrast',
+      nodes: [{
+        id: '789:012',
+        name: 'Body Text'
+      }]
+    },
+    index: 1
+  }
+};
+
+export const MultipleNodes: Story = {
+  args: {
+    error: {
+      type: 'INCONSISTENT_SPACING',
+      message: 'Inconsistent spacing between elements',
+      ruleName: 'Layout',
+      nodes: [
+        { id: '111:111', name: 'Card 1' },
+        { id: '222:222', name: 'Card 2' },
+        { id: '333:333', name: 'Card 3' }
+      ]
+    },
+    index: 2
+  }
+};
+```
+
+7. Set up visual regression testing with Chromatic:
+```bash
+# Install Chromatic
+npm install --save-dev chromatic
+
+# Add to package.json scripts
+"chromatic": "npx chromatic --project-token=<your-token>"
+```
+
+8. Configure GitHub Actions for Storybook:
+```yaml
+# .github/workflows/storybook.yml
+name: Storybook
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build-storybook
+      - uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+```
+
+9. Add Storybook scripts to package.json:
+```json
+"scripts": {
+  "storybook": "storybook dev -p 6006",
+  "build-storybook": "storybook build",
+  "test-storybook": "test-storybook",
+  "chromatic": "chromatic --exit-zero-on-changes"
+}
+```
+
+10. Create comprehensive documentation:
+```markdown
+# Storybook Style Guide
+
+## Component Story Structure
+- Each component should have a `.stories.tsx` file
+- Include multiple variants showing different states
+- Add JSDoc comments for better documentation
+- Use Controls addon for interactive props
+- Include accessibility testing
+
+## Naming Conventions
+- Story names should be descriptive: Default, Loading, Error, Empty
+- Use folders to organize: Components/, Layouts/, Forms/
+
+## Testing Requirements
+- All stories must pass accessibility checks
+- Visual regression tests via Chromatic
+- Interaction tests for user flows
+```
+
+# Test Strategy:
+1. Installation verification:
+   - Run `npm run storybook` and verify it starts on http://localhost:6006
+   - Check that the Storybook UI loads without errors
+   - Verify TypeScript files are being compiled correctly
+
+2. Component story testing:
+   - Create stories for at least 3 different components
+   - Verify each story renders correctly
+   - Test that Controls addon allows prop manipulation
+   - Ensure Actions addon logs events properly
+
+3. Figma plugin environment testing:
+   - Verify components render with Figma-appropriate styling
+   - Check that CSS variables are applied correctly
+   - Test responsive behavior at Figma plugin dimensions
+   - Ensure no console errors related to missing globals
+
+4. TypeScript integration:
+   - Verify type checking works in stories
+   - Test that component props are properly typed
+   - Check that auto-generated docs show correct types
+   - Ensure IntelliSense works in story files
+
+5. Addon functionality:
+   - Test Controls: modify props and see updates
+   - Test Actions: verify callbacks are logged
+   - Test A11y: run accessibility checks
+   - Test Viewport: check responsive views
+   - Test Docs: verify auto-documentation
+
+6. Build testing:
+   - Run `npm run build-storybook`
+   - Verify static build completes successfully
+   - Test the built version by serving locally
+   - Check bundle size is reasonable
+
+7. Visual regression testing:
+   - Set up Chromatic and run initial baseline
+   - Make a small UI change and verify it's detected
+   - Test the approval workflow
+   - Verify GitHub integration works
+
+8. Performance testing:
+   - Measure Storybook startup time
+   - Check story switching performance
+   - Monitor memory usage with many stories
+   - Test with large component trees
+
+9. Cross-browser testing:
+   - Test in Chrome, Firefox, Safari, Edge
+   - Verify all stories render consistently
+   - Check for any browser-specific issues
+
+10. Developer experience:
+    - Test hot module replacement
+    - Verify error messages are helpful
+    - Check that the search function works
+    - Test keyboard navigation
+
+# Subtasks:
+## 7.1. Install and configure Storybook [pending]
+### Dependencies: None
+### Description: Install Storybook 7+ with TypeScript and React support, configure for Figma plugin environment
+### Details:
+
+
+## 7.2. Set up Storybook webpack configuration [pending]
+### Dependencies: None
+### Description: Configure webpack to handle Figma plugin globals and module resolution
+### Details:
+
+
+## 7.3. Create stories for core components [pending]
+### Dependencies: None
+### Description: Write stories for ErrorListItem, BulkErrorList, BulkErrorListItem, Panel, PanelHeader
+### Details:
+
+
+## 7.4. Create stories for UI components [pending]
+### Dependencies: None
+### Description: Write stories for Button, Modal, EmptyState, Navigation, Banner, Menu
+### Details:
+
+
+## 7.5. Create stories for form components [pending]
+### Dependencies: None
+### Description: Write stories for SettingsForm, SettingsPanel, SuggestionButton
+### Details:
+
+
+## 7.6. Create stories for style components [pending]
+### Dependencies: None
+### Description: Write stories for StylesPage, StylesPanel, StyleListItem, StyleContent
+### Details:
+
+
+## 7.7. Add Storybook addons [pending]
+### Dependencies: None
+### Description: Install and configure essential addons: controls, actions, viewport, a11y, docs
+### Details:
+
+
+## 7.8. Set up visual regression testing [pending]
+### Dependencies: None
+### Description: Configure Chromatic or similar tool for visual regression testing of components
+### Details:
+
+
+## 7.9. Add Storybook documentation [pending]
+### Dependencies: None
+### Description: Create README for Storybook usage, add component documentation with MDX
+### Details:
+
+
