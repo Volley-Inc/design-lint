@@ -7,7 +7,11 @@
         "description": "Establish a complete testing framework with unit tests, integration tests, and coverage reporting before making any major changes to the codebase",
         "status": "pending",
         "priority": "critical",
-        "tags": ["testing", "infrastructure", "quality"],
+        "tags": [
+          "testing",
+          "infrastructure",
+          "quality"
+        ],
         "dependencies": [],
         "subtasks": [
           {
@@ -72,8 +76,14 @@
         "description": "Upgrade TypeScript from 3.5.3 to latest stable version (5.x) and update tsconfig.json with modern configuration options including strict mode, ES modules, and proper type checking",
         "status": "pending",
         "priority": "high",
-        "tags": ["typescript", "upgrade", "dependencies"],
-        "dependencies": ["0"],
+        "tags": [
+          "typescript",
+          "upgrade",
+          "dependencies"
+        ],
+        "dependencies": [
+          "0"
+        ],
         "subtasks": [
           {
             "id": "1.1",
@@ -101,8 +111,15 @@
         "description": "Upgrade Webpack from v4 to v5 and update all related loaders and plugins to compatible versions",
         "status": "pending",
         "priority": "high",
-        "tags": ["webpack", "build", "dependencies"],
-        "dependencies": ["0", "1"],
+        "tags": [
+          "webpack",
+          "build",
+          "dependencies"
+        ],
+        "dependencies": [
+          "0",
+          "1"
+        ],
         "subtasks": [
           {
             "id": "2.1",
@@ -130,8 +147,15 @@
         "description": "Migrate from deprecated TSLint to ESLint with TypeScript support and React plugins",
         "status": "pending",
         "priority": "medium",
-        "tags": ["linting", "eslint", "code-quality"],
-        "dependencies": ["0", "1"],
+        "tags": [
+          "linting",
+          "eslint",
+          "code-quality"
+        ],
+        "dependencies": [
+          "0",
+          "1"
+        ],
         "subtasks": [
           {
             "id": "3.1",
@@ -159,8 +183,17 @@
         "description": "Resolve all TypeScript compilation errors throughout the codebase with proper typing",
         "status": "pending",
         "priority": "high",
-        "tags": ["typescript", "types", "code-quality"],
-        "dependencies": ["0", "1", "2", "3"],
+        "tags": [
+          "typescript",
+          "types",
+          "code-quality"
+        ],
+        "dependencies": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
         "subtasks": [
           {
             "id": "4.1",
@@ -194,8 +227,16 @@
         "description": "Upgrade React from v17 to v18 and update all related dependencies",
         "status": "pending",
         "priority": "medium",
-        "tags": ["react", "dependencies", "upgrade"],
-        "dependencies": ["0", "1", "2"],
+        "tags": [
+          "react",
+          "dependencies",
+          "upgrade"
+        ],
+        "dependencies": [
+          "0",
+          "1",
+          "2"
+        ],
         "subtasks": [
           {
             "id": "5.1",
@@ -223,8 +264,15 @@
         "description": "Update build scripts to use modern Node.js practices and remove hardcoded paths",
         "status": "pending",
         "priority": "low",
-        "tags": ["build", "scripts", "tooling"],
-        "dependencies": ["0", "2"],
+        "tags": [
+          "build",
+          "scripts",
+          "tooling"
+        ],
+        "dependencies": [
+          "0",
+          "2"
+        ],
         "subtasks": [
           {
             "id": "6.1",
@@ -245,11 +293,218 @@
             "status": "pending"
           }
         ]
+      },
+      {
+        "id": "7",
+        "title": "Add Storybook for component development",
+        "description": "Set up Storybook 7+ for isolated React component development, documentation, and visual testing. This will improve development workflow and component reliability.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "storybook",
+          "documentation",
+          "testing",
+          "react",
+          "ui"
+        ],
+        "dependencies": [
+          "0",
+          "1",
+          "5"
+        ],
+        "subtasks": [
+          {
+            "id": "7.1",
+            "title": "Install and configure Storybook",
+            "description": "Install Storybook 7+ with TypeScript and React support, configure for Figma plugin environment",
+            "status": "pending"
+          },
+          {
+            "id": "7.2",
+            "title": "Set up Storybook webpack configuration",
+            "description": "Configure webpack to handle Figma plugin globals and module resolution",
+            "status": "pending"
+          },
+          {
+            "id": "7.3",
+            "title": "Create stories for core components",
+            "description": "Write stories for ErrorListItem, BulkErrorList, BulkErrorListItem, Panel, PanelHeader",
+            "status": "pending"
+          },
+          {
+            "id": "7.4",
+            "title": "Create stories for UI components",
+            "description": "Write stories for Button, Modal, EmptyState, Navigation, Banner, Menu",
+            "status": "pending"
+          },
+          {
+            "id": "7.5",
+            "title": "Create stories for form components",
+            "description": "Write stories for SettingsForm, SettingsPanel, SuggestionButton",
+            "status": "pending"
+          },
+          {
+            "id": "7.6",
+            "title": "Create stories for style components",
+            "description": "Write stories for StylesPage, StylesPanel, StyleListItem, StyleContent",
+            "status": "pending"
+          },
+          {
+            "id": "7.7",
+            "title": "Add Storybook addons",
+            "description": "Install and configure essential addons: controls, actions, viewport, a11y, docs",
+            "status": "pending"
+          },
+          {
+            "id": "7.8",
+            "title": "Set up visual regression testing",
+            "description": "Configure Chromatic or similar tool for visual regression testing of components",
+            "status": "pending"
+          },
+          {
+            "id": "7.9",
+            "title": "Add Storybook documentation",
+            "description": "Create README for Storybook usage, add component documentation with MDX",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Set Up Storybook for React Component Development and Documentation",
+        "description": "Implement Storybook 7+ with TypeScript support to develop and document React components in the Figma plugin. Create stories for all existing components and configure visual regression testing.",
+        "details": "1. Install Storybook and required dependencies:\n```bash\nnpm install --save-dev @storybook/react @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/builder-webpack5 @storybook/manager-webpack5 @storybook/addon-a11y\n```\n\n2. Initialize Storybook with TypeScript support:\n```bash\nnpx storybook init --type react --builder webpack5\n```\n\n3. Configure Storybook for the Figma plugin environment:\n   - Create a `.storybook/main.js` file with appropriate webpack configuration\n   - Set up TypeScript support in `.storybook/main.js`:\n   ```javascript\n   module.exports = {\n     stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],\n     addons: [\n       '@storybook/addon-links',\n       '@storybook/addon-essentials',\n       '@storybook/addon-interactions',\n       '@storybook/addon-a11y'\n     ],\n     framework: '@storybook/react',\n     core: {\n       builder: '@storybook/builder-webpack5'\n     },\n     typescript: {\n       check: true,\n       reactDocgen: 'react-docgen-typescript'\n     }\n   };\n   ```\n\n4. Create a `.storybook/preview.js` file to set up global decorators and parameters:\n   ```javascript\n   import '../src/ui.css'; // Import global styles\n\n   export const parameters = {\n     actions: { argTypesRegex: '^on[A-Z].*' },\n     controls: {\n       matchers: {\n         color: /(background|color)$/i,\n         date: /Date$/,\n       },\n     },\n   };\n   \n   // Add a decorator to simulate Figma plugin environment\n   export const decorators = [\n     (Story) => (\n       <div className=\"figma-plugin-ui\">\n         <Story />\n       </div>\n     ),\n   ];\n   ```\n\n5. Create stories for all existing components:\n   - ErrorListItem.stories.tsx\n   - BulkErrorList.stories.tsx\n   - Panel.stories.tsx\n   - (and other components)\n\n6. Example story file structure:\n   ```typescript\n   // src/components/ErrorListItem.stories.tsx\n   import React from 'react';\n   import { ComponentStory, ComponentMeta } from '@storybook/react';\n   import { ErrorListItem } from './ErrorListItem';\n\n   export default {\n     title: 'Components/ErrorListItem',\n     component: ErrorListItem,\n     argTypes: {\n       error: { control: 'object' },\n       onFixClick: { action: 'fixed' }\n     },\n   } as ComponentMeta<typeof ErrorListItem>;\n\n   const Template: ComponentStory<typeof ErrorListItem> = (args) => <ErrorListItem {...args} />;\n\n   export const Default = Template.bind({});\n   Default.args = {\n     error: {\n       id: '1',\n       message: 'Missing alt text',\n       element: 'Image',\n       location: 'Frame 1'\n     }\n   };\n\n   export const WithLongMessage = Template.bind({});\n   WithLongMessage.args = {\n     error: {\n       id: '2',\n       message: 'This is a very long error message that should wrap to multiple lines when displayed in the UI',\n       element: 'Text',\n       location: 'Frame 2/Group 1'\n     }\n   };\n   ```\n\n7. Set up visual regression testing with Storybook:\n   ```bash\n   npm install --save-dev @storybook/addon-storyshots @storybook/addon-storyshots-puppeteer puppeteer\n   ```\n\n8. Configure visual regression tests:\n   ```typescript\n   // src/__tests__/storyshots.test.js\n   import initStoryshots from '@storybook/addon-storyshots';\n   import { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';\n\n   initStoryshots({\n     suite: 'Image storyshots',\n     test: imageSnapshot({\n       storybookUrl: 'http://localhost:6006',\n     }),\n   });\n   ```\n\n9. Add npm scripts to package.json:\n   ```json\n   \"scripts\": {\n     \"storybook\": \"start-storybook -p 6006\",\n     \"build-storybook\": \"build-storybook\",\n     \"test-storybook\": \"test-storybook\",\n     \"visual-test\": \"jest --config=jest.visual.config.js\"\n   }\n   ```\n\n10. Document component APIs using JSDoc comments and ensure they're properly displayed in Storybook.",
+        "testStrategy": "1. Verify Storybook installation and configuration:\n   - Run `npm run storybook` and confirm Storybook launches successfully at http://localhost:6006\n   - Check that TypeScript support is working by intentionally introducing a type error and verifying it's caught\n\n2. Validate component stories:\n   - Confirm all existing components have corresponding story files\n   - Verify each component displays correctly in various states\n   - Check that component props are properly documented and controllable via Storybook controls\n   - Test component interactions using Storybook's actions addon\n\n3. Test Figma plugin environment simulation:\n   - Verify components render in a way that matches their appearance in the Figma plugin\n   - Confirm any Figma-specific styling or behaviors are properly simulated\n\n4. Validate visual regression testing:\n   - Run `npm run visual-test` to generate baseline screenshots\n   - Make a small UI change and verify the test catches the visual difference\n   - Confirm the process for updating baseline images when intentional UI changes are made\n\n5. Documentation quality check:\n   - Review component documentation in Storybook for completeness\n   - Ensure prop descriptions, default values, and types are correctly displayed\n   - Verify that usage examples and notes are helpful for developers\n\n6. Cross-browser testing:\n   - Open Storybook in different browsers to ensure consistent rendering\n   - Check responsive behavior if applicable\n\n7. Integration test:\n   - Verify that the Storybook setup doesn't interfere with the actual Figma plugin build process\n   - Confirm that components can be developed in isolation in Storybook and then used in the plugin without issues",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and Initialize Storybook with TypeScript Support",
+            "description": "Set up the initial Storybook environment with TypeScript support for the Figma plugin project",
+            "dependencies": [],
+            "details": "1. Install Storybook and required dependencies:\n```bash\nnpm install --save-dev @storybook/react @storybook/addon-essentials @storybook/addon-interactions @storybook/addon-links @storybook/builder-webpack5 @storybook/manager-webpack5 @storybook/addon-a11y\n```\n\n2. Initialize Storybook with TypeScript support:\n```bash\nnpx storybook init --type react --builder webpack5\n```\n\n3. Verify the installation created the basic .storybook directory structure\n\n4. Add npm scripts to package.json:\n```json\n\"scripts\": {\n  \"storybook\": \"start-storybook -p 6006\",\n  \"build-storybook\": \"build-storybook\"\n}\n```",
+            "status": "pending",
+            "testStrategy": "Run `npm run storybook` and verify that Storybook launches successfully at http://localhost:6006 with the default welcome page"
+          },
+          {
+            "id": 2,
+            "title": "Configure Storybook for Figma Plugin Environment",
+            "description": "Customize Storybook configuration to properly support the Figma plugin environment and TypeScript",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "1. Update `.storybook/main.js` with appropriate webpack configuration:\n```javascript\nmodule.exports = {\n  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],\n  addons: [\n    '@storybook/addon-links',\n    '@storybook/addon-essentials',\n    '@storybook/addon-interactions',\n    '@storybook/addon-a11y'\n  ],\n  framework: '@storybook/react',\n  core: {\n    builder: '@storybook/builder-webpack5'\n  },\n  typescript: {\n    check: true,\n    reactDocgen: 'react-docgen-typescript'\n  }\n};\n```\n\n2. Create `.storybook/preview.js` to set up global decorators and parameters:\n```javascript\nimport '../src/ui.css'; // Import global styles\n\nexport const parameters = {\n  actions: { argTypesRegex: '^on[A-Z].*' },\n  controls: {\n    matchers: {\n      color: /(background|color)$/i,\n      date: /Date$/,\n    },\n  },\n};\n\n// Add a decorator to simulate Figma plugin environment\nexport const decorators = [\n  (Story) => (\n    <div className=\"figma-plugin-ui\">\n      <Story />\n    </div>\n  ),\n];\n```\n\n3. Create a `.storybook/preview-head.html` file to include any necessary Figma plugin CSS variables or styles:\n```html\n<style>\n  /* Add Figma-specific CSS variables here */\n  :root {\n    --figma-color-bg: #ffffff;\n    --figma-color-text: #333333;\n    /* Add other Figma variables as needed */\n  }\n  \n  body {\n    font-family: 'Inter', sans-serif;\n  }\n</style>\n```",
+            "status": "pending",
+            "testStrategy": "1. Verify TypeScript support by intentionally introducing a type error in a story file and confirming it's caught\n2. Check that the Figma plugin styling is properly applied to components in Storybook"
+          },
+          {
+            "id": 3,
+            "title": "Create Stories for Core UI Components",
+            "description": "Develop Storybook stories for the main UI components of the Figma plugin",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "1. Create story files for the following core components:\n   - ErrorListItem.stories.tsx\n   - BulkErrorList.stories.tsx\n   - Panel.stories.tsx\n\n2. Follow this structure for each story file:\n```typescript\n// src/components/ErrorListItem.stories.tsx\nimport React from 'react';\nimport { ComponentStory, ComponentMeta } from '@storybook/react';\nimport { ErrorListItem } from './ErrorListItem';\n\nexport default {\n  title: 'Components/ErrorListItem',\n  component: ErrorListItem,\n  argTypes: {\n    error: { control: 'object' },\n    onFixClick: { action: 'fixed' }\n  },\n} as ComponentMeta<typeof ErrorListItem>;\n\nconst Template: ComponentStory<typeof ErrorListItem> = (args) => <ErrorListItem {...args} />;\n\nexport const Default = Template.bind({});\nDefault.args = {\n  error: {\n    id: '1',\n    message: 'Missing alt text',\n    element: 'Image',\n    location: 'Frame 1'\n  }\n};\n\nexport const WithLongMessage = Template.bind({});\nWithLongMessage.args = {\n  error: {\n    id: '2',\n    message: 'This is a very long error message that should wrap to multiple lines when displayed in the UI',\n    element: 'Text',\n    location: 'Frame 2/Group 1'\n  }\n};\n```\n\n3. Ensure each component has multiple story variants showing different states and prop combinations\n\n4. Add JSDoc comments to components to improve documentation in Storybook:\n```typescript\n/**\n * Component for displaying individual accessibility errors\n * @param {Object} props - Component props\n * @param {Error} props.error - Error object containing details about the accessibility issue\n * @param {Function} props.onFixClick - Callback function when the fix button is clicked\n */\nexport const ErrorListItem = ({ error, onFixClick }: ErrorListItemProps) => {\n  // Component implementation\n};\n```",
+            "status": "pending",
+            "testStrategy": "1. Verify that all stories render correctly in Storybook\n2. Test interactive components by using Storybook's actions addon to confirm events are triggered\n3. Check that component documentation is properly displayed in the Docs tab"
+          },
+          {
+            "id": 4,
+            "title": "Create Stories for Additional UI Components",
+            "description": "Develop Storybook stories for the remaining UI components of the Figma plugin",
+            "dependencies": [
+              "8.3"
+            ],
+            "details": "1. Create story files for the following additional components:\n   - Button.stories.tsx\n   - Checkbox.stories.tsx\n   - Dropdown.stories.tsx\n   - ProgressIndicator.stories.tsx\n   - Any other remaining components\n\n2. Follow the same structure as in the previous subtask, ensuring each component has:\n   - Multiple variants showing different states\n   - Proper controls for interactive props\n   - Action handlers for events\n   - Comprehensive documentation\n\n3. Create a composite story that shows how multiple components work together:\n```typescript\n// src/components/AccessibilityPanel.stories.tsx\nimport React from 'react';\nimport { ComponentStory, ComponentMeta } from '@storybook/react';\nimport { AccessibilityPanel } from './AccessibilityPanel';\n\nexport default {\n  title: 'Composite/AccessibilityPanel',\n  component: AccessibilityPanel,\n  parameters: {\n    layout: 'fullscreen',\n  },\n} as ComponentMeta<typeof AccessibilityPanel>;\n\nconst Template: ComponentStory<typeof AccessibilityPanel> = (args) => <AccessibilityPanel {...args} />;\n\nexport const WithErrors = Template.bind({});\nWithErrors.args = {\n  errors: [\n    { id: '1', message: 'Missing alt text', element: 'Image', location: 'Frame 1' },\n    { id: '2', message: 'Low contrast text', element: 'Text', location: 'Frame 2' }\n  ],\n  onFixAll: () => console.log('Fix all clicked')\n};\n\nexport const Empty = Template.bind({});\nEmpty.args = {\n  errors: [],\n  onFixAll: () => console.log('Fix all clicked')\n};\n```",
+            "status": "pending",
+            "testStrategy": "1. Verify all stories render correctly in Storybook\n2. Test responsive behavior by using Storybook's viewport addon to view components at different screen sizes\n3. Use Storybook's accessibility addon to check for accessibility issues in the components"
+          },
+          {
+            "id": 5,
+            "title": "Set Up Visual Regression Testing",
+            "description": "Configure visual regression testing for Storybook to ensure UI consistency",
+            "dependencies": [
+              "8.4"
+            ],
+            "details": "1. Install visual regression testing dependencies:\n```bash\nnpm install --save-dev @storybook/addon-storyshots @storybook/addon-storyshots-puppeteer puppeteer jest-image-snapshot\n```\n\n2. Create a Jest configuration file for visual tests:\n```javascript\n// jest.visual.config.js\nmodule.exports = {\n  preset: 'ts-jest',\n  testEnvironment: 'node',\n  testMatch: ['**/__tests__/**/*.visual.test.[jt]s?(x)'],\n};\n```\n\n3. Configure visual regression tests:\n```typescript\n// src/__tests__/storyshots.visual.test.js\nimport initStoryshots from '@storybook/addon-storyshots';\nimport { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';\n\ninitStoryshots({\n  suite: 'Image storyshots',\n  test: imageSnapshot({\n    storybookUrl: 'http://localhost:6006',\n    customizePage: page => page.setViewport({ width: 1200, height: 800 }),\n  }),\n});\n```\n\n4. Add npm scripts to package.json:\n```json\n\"scripts\": {\n  \"test-storybook\": \"test-storybook\",\n  \"visual-test\": \"start-storybook -p 6006 -s public --ci && jest --config=jest.visual.config.js\",\n  \"visual-test:update\": \"start-storybook -p 6006 -s public --ci && jest --config=jest.visual.config.js -u\"\n}\n```\n\n5. Create a GitHub Actions workflow for visual testing:\n```yaml\n# .github/workflows/visual-testing.yml\nname: Visual Regression Tests\n\non:\n  pull_request:\n    branches: [ main ]\n\njobs:\n  visual-test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v2\n      - name: Setup Node.js\n        uses: actions/setup-node@v2\n        with:\n          node-version: '16'\n      - name: Install dependencies\n        run: npm ci\n      - name: Run visual tests\n        run: npm run visual-test\n```",
+            "status": "pending",
+            "testStrategy": "1. Run `npm run visual-test` to generate baseline screenshots\n2. Make a small UI change to a component and run the tests again to verify they detect the change\n3. Use `npm run visual-test:update` to update the baseline after intentional UI changes"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Set Up Comprehensive Testing Infrastructure",
+        "description": "Establish a complete testing framework with unit tests, integration tests, and coverage reporting to ensure code quality throughout the modernization process.",
+        "details": "1. Install testing libraries and dependencies:\n```bash\nnpm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom ts-jest msw jest-coverage-reporter\n```\n\n2. Configure Jest for TypeScript support:\n   - Create a `jest.config.js` file with appropriate settings:\n```javascript\nmodule.exports = {\n  preset: 'ts-jest',\n  testEnvironment: 'jsdom',\n  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],\n  moduleNameMapper: {\n    '\\\\.(css|less|scss|sass)$': 'identity-obj-proxy',\n    '^@/(.*)$': '<rootDir>/src/$1'\n  },\n  collectCoverageFrom: [\n    'src/**/*.{js,jsx,ts,tsx}',\n    '!src/**/*.stories.{js,jsx,ts,tsx}',\n    '!src/**/*.d.ts'\n  ],\n  coverageThreshold: {\n    global: {\n      branches: 70,\n      functions: 70,\n      lines: 70,\n      statements: 70\n    }\n  }\n};\n```\n\n3. Create a Jest setup file (`jest.setup.js`):\n```javascript\nimport '@testing-library/jest-dom';\n```\n\n4. Set up Mock Service Worker (MSW) for API mocking:\n   - Create a `src/mocks` directory\n   - Set up handlers and server configuration for simulating API responses\n\n5. Configure integration with Storybook:\n   - Install required packages:\n   ```bash\n   npm install --save-dev @storybook/testing-react @storybook/jest\n   ```\n   - Create utility functions to import stories into tests\n\n6. Set up GitHub Actions workflow for continuous testing:\n   - Create `.github/workflows/test.yml` to run tests on pull requests and main branch commits\n   - Configure coverage reporting and PR comments\n\n7. Add npm scripts to package.json:\n```json\n\"scripts\": {\n  \"test\": \"jest\",\n  \"test:watch\": \"jest --watch\",\n  \"test:coverage\": \"jest --coverage\",\n  \"test:ci\": \"jest --ci --coverage\"\n}\n```\n\n8. Create documentation for testing standards:\n   - Document testing patterns and best practices\n   - Provide examples for component, hook, and utility testing\n   - Define guidelines for test coverage requirements",
+        "testStrategy": "1. Verify testing environment setup:\n   - Run `npm run test` and confirm tests execute without errors\n   - Check that TypeScript integration works by writing a simple test with TypeScript syntax\n   - Verify coverage reporting generates accurate reports\n\n2. Test the unit testing framework:\n   - Create sample unit tests for existing components\n   - Verify that DOM testing works correctly with @testing-library/react\n   - Confirm that component rendering, user interactions, and state changes can be tested\n\n3. Validate integration testing capabilities:\n   - Set up and test API mocking with MSW\n   - Create a test that simulates a complete user flow across multiple components\n   - Verify that complex interactions can be tested effectively\n\n4. Test coverage reporting:\n   - Run `npm run test:coverage` and verify the coverage report is generated\n   - Check that the report correctly identifies covered and uncovered code\n   - Confirm that coverage thresholds are enforced\n\n5. Verify CI integration:\n   - Push a commit to a test branch and confirm that GitHub Actions runs the tests\n   - Verify that test failures properly block PR merges\n   - Check that coverage reports are correctly attached to PRs\n\n6. Validate Storybook integration:\n   - Confirm that components can be imported from Storybook into tests\n   - Verify that Storybook stories can be rendered and tested programmatically",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and Configure Jest with TypeScript Support",
+            "description": "Set up the foundational testing environment by installing necessary dependencies and configuring Jest to work with TypeScript.",
+            "dependencies": [],
+            "details": "1. Install testing libraries with npm: `npm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom ts-jest jest-coverage-reporter`\n2. Create jest.config.js with TypeScript support as specified in the task details\n3. Create jest.setup.js file with the import for @testing-library/jest-dom\n4. Add test scripts to package.json including test, test:watch, test:coverage, and test:ci commands\n5. Create a simple test file to verify the setup works correctly",
+            "status": "pending",
+            "testStrategy": "Run a basic test to ensure Jest executes correctly with TypeScript support by creating a simple component test that imports TypeScript types."
+          },
+          {
+            "id": 2,
+            "title": "Set Up Mock Service Worker for API Testing",
+            "description": "Configure Mock Service Worker (MSW) to simulate API responses for integration testing without actual backend dependencies.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "1. Install MSW if not already installed: `npm install --save-dev msw`\n2. Create a src/mocks directory structure\n3. Create a src/mocks/handlers.ts file to define API mocking patterns\n4. Set up a src/mocks/server.ts file to configure the MSW server\n5. Create a src/mocks/browser.ts file for browser-based testing\n6. Update jest.setup.js to initialize and clean up the MSW server for tests\n7. Create example API mocks for critical endpoints",
+            "status": "pending",
+            "testStrategy": "Create a test that verifies MSW correctly intercepts API calls and returns mocked responses. Test both successful and error responses."
+          },
+          {
+            "id": 3,
+            "title": "Implement Unit Testing Framework with Example Tests",
+            "description": "Create the structure and examples for unit testing components, hooks, and utility functions to establish testing patterns.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "1. Create a src/__tests__ directory structure that mirrors the src directory\n2. Implement example component tests using React Testing Library\n3. Create example hook tests demonstrating proper testing of custom hooks\n4. Add utility function tests showing pure function testing approaches\n5. Document testing patterns in each example with detailed comments\n6. Ensure tests use proper TypeScript typing\n7. Implement snapshot testing examples where appropriate",
+            "status": "pending",
+            "testStrategy": "Verify tests run successfully and follow best practices by checking that they test behavior rather than implementation details. Ensure tests are readable and maintainable."
+          },
+          {
+            "id": 4,
+            "title": "Set Up Integration Testing Framework",
+            "description": "Establish integration testing capabilities to test interactions between components and with backend services.",
+            "dependencies": [
+              "9.2",
+              "9.3"
+            ],
+            "details": "1. Create a src/__integration_tests__ directory for integration tests\n2. Set up test utilities for rendering connected components with providers\n3. Configure user event for simulating user interactions\n4. Create helper functions for common testing patterns\n5. Implement example integration tests that demonstrate component interaction\n6. Set up MSW handlers specifically for integration test scenarios\n7. Document integration testing approach and best practices",
+            "status": "pending",
+            "testStrategy": "Create an end-to-end test flow that verifies multiple components work together correctly, including form submissions, navigation, and data fetching with mocked APIs."
+          },
+          {
+            "id": 5,
+            "title": "Configure CI/CD Integration and Coverage Reporting",
+            "description": "Set up continuous integration testing and coverage reporting to ensure code quality is maintained throughout development.",
+            "dependencies": [
+              "9.3",
+              "9.4"
+            ],
+            "details": "1. Create .github/workflows/test.yml file for GitHub Actions\n2. Configure the workflow to run tests on pull requests and main branch commits\n3. Set up coverage reporting in the CI pipeline\n4. Configure coverage thresholds as specified in the jest.config.js\n5. Set up PR comments with test results and coverage information\n6. Create documentation for the testing standards including coverage requirements\n7. Add a coverage badge to the README.md\n8. Set up Storybook integration with testing using @storybook/testing-react and @storybook/jest",
+            "status": "pending",
+            "testStrategy": "Verify the CI pipeline by creating a test PR that triggers the workflow. Check that tests run correctly, coverage reports are generated, and PR comments work as expected."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-30T23:42:39.459Z",
-      "updated": "2025-07-30T23:45:00.000Z",
+      "updated": "2025-07-31T00:24:24.973Z",
       "description": "Tasks for upgrading and modernizing the Design Lint Figma plugin TypeScript codebase"
     }
   }
