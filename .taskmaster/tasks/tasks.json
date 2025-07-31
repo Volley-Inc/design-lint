@@ -1,0 +1,256 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "0",
+        "title": "Set up comprehensive testing infrastructure",
+        "description": "Establish a complete testing framework with unit tests, integration tests, and coverage reporting before making any major changes to the codebase",
+        "status": "pending",
+        "priority": "critical",
+        "tags": ["testing", "infrastructure", "quality"],
+        "dependencies": [],
+        "subtasks": [
+          {
+            "id": "0.1",
+            "title": "Choose and install testing framework",
+            "description": "Select Jest or Vitest for testing React/TypeScript, install with necessary dependencies including @testing-library/react, @testing-library/jest-dom",
+            "status": "pending"
+          },
+          {
+            "id": "0.2",
+            "title": "Configure testing environment",
+            "description": "Set up jest.config.js or vitest.config.js, configure for TypeScript, React, and Figma plugin environment mocking",
+            "status": "pending"
+          },
+          {
+            "id": "0.3",
+            "title": "Create test structure and utilities",
+            "description": "Set up test directories, create test utilities for mocking Figma API, create test helpers and fixtures",
+            "status": "pending"
+          },
+          {
+            "id": "0.4",
+            "title": "Write tests for critical linting functions",
+            "description": "Create comprehensive unit tests for lintingFunctions.ts covering all lint rules and edge cases",
+            "status": "pending"
+          },
+          {
+            "id": "0.5",
+            "title": "Write tests for controller logic",
+            "description": "Test controller.ts functions including error detection, ignore functionality, and Figma API interactions",
+            "status": "pending"
+          },
+          {
+            "id": "0.6",
+            "title": "Write tests for React components",
+            "description": "Create unit and integration tests for key components like BulkErrorList, ErrorListItem, and App",
+            "status": "pending"
+          },
+          {
+            "id": "0.7",
+            "title": "Set up coverage reporting",
+            "description": "Configure coverage collection with Istanbul/c8, set up coverage thresholds, add coverage script to package.json",
+            "status": "pending"
+          },
+          {
+            "id": "0.8",
+            "title": "Add test scripts and CI pipeline",
+            "description": "Add test, test:watch, and coverage scripts to package.json, create GitHub Actions workflow for automated testing",
+            "status": "pending"
+          },
+          {
+            "id": "0.9",
+            "title": "Document testing strategy",
+            "description": "Create testing documentation explaining how to write and run tests, testing best practices for Figma plugins",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "1",
+        "title": "Upgrade TypeScript to latest stable version",
+        "description": "Upgrade TypeScript from 3.5.3 to latest stable version (5.x) and update tsconfig.json with modern configuration options including strict mode, ES modules, and proper type checking",
+        "status": "pending",
+        "priority": "high",
+        "tags": ["typescript", "upgrade", "dependencies"],
+        "dependencies": ["0"],
+        "subtasks": [
+          {
+            "id": "1.1",
+            "title": "Update TypeScript dependency",
+            "description": "Update TypeScript from 3.5.3 to 5.x in package.json",
+            "status": "pending"
+          },
+          {
+            "id": "1.2",
+            "title": "Update tsconfig.json settings",
+            "description": "Update compiler options for modern TypeScript including strict mode, ES modules, and proper type roots",
+            "status": "pending"
+          },
+          {
+            "id": "1.3",
+            "title": "Update @types packages",
+            "description": "Update all @types packages to compatible versions with TypeScript 5.x",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "title": "Upgrade Webpack and related build tools",
+        "description": "Upgrade Webpack from v4 to v5 and update all related loaders and plugins to compatible versions",
+        "status": "pending",
+        "priority": "high",
+        "tags": ["webpack", "build", "dependencies"],
+        "dependencies": ["0", "1"],
+        "subtasks": [
+          {
+            "id": "2.1",
+            "title": "Upgrade Webpack to v5",
+            "description": "Update webpack and webpack-cli to latest v5 versions",
+            "status": "pending"
+          },
+          {
+            "id": "2.2",
+            "title": "Update Webpack configuration",
+            "description": "Migrate webpack.config.js to Webpack 5 syntax and features",
+            "status": "pending"
+          },
+          {
+            "id": "2.3",
+            "title": "Update loaders and plugins",
+            "description": "Update ts-loader, css-loader, style-loader, and html-webpack-plugin to Webpack 5 compatible versions",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "title": "Replace TSLint with ESLint",
+        "description": "Migrate from deprecated TSLint to ESLint with TypeScript support and React plugins",
+        "status": "pending",
+        "priority": "medium",
+        "tags": ["linting", "eslint", "code-quality"],
+        "dependencies": ["0", "1"],
+        "subtasks": [
+          {
+            "id": "3.1",
+            "title": "Remove TSLint",
+            "description": "Remove tslint and tslint-react dependencies and configuration",
+            "status": "pending"
+          },
+          {
+            "id": "3.2",
+            "title": "Install ESLint with TypeScript",
+            "description": "Install eslint, @typescript-eslint/parser, @typescript-eslint/eslint-plugin, and eslint-plugin-react",
+            "status": "pending"
+          },
+          {
+            "id": "3.3",
+            "title": "Configure ESLint",
+            "description": "Create .eslintrc.js with appropriate rules for TypeScript and React",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "title": "Fix all TypeScript type errors",
+        "description": "Resolve all TypeScript compilation errors throughout the codebase with proper typing",
+        "status": "pending",
+        "priority": "high",
+        "tags": ["typescript", "types", "code-quality"],
+        "dependencies": ["0", "1", "2", "3"],
+        "subtasks": [
+          {
+            "id": "4.1",
+            "title": "Fix React component prop types",
+            "description": "Add proper TypeScript interfaces for all React component props",
+            "status": "pending"
+          },
+          {
+            "id": "4.2",
+            "title": "Fix Figma API type errors",
+            "description": "Update Figma API usage to match current type definitions",
+            "status": "pending"
+          },
+          {
+            "id": "4.3",
+            "title": "Fix controller and linting function types",
+            "description": "Add proper types to controller.ts and lintingFunctions.ts",
+            "status": "pending"
+          },
+          {
+            "id": "4.4",
+            "title": "Remove unused variables",
+            "description": "Clean up all unused variables and imports flagged by TypeScript",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "title": "Update React and related dependencies",
+        "description": "Upgrade React from v17 to v18 and update all related dependencies",
+        "status": "pending",
+        "priority": "medium",
+        "tags": ["react", "dependencies", "upgrade"],
+        "dependencies": ["0", "1", "2"],
+        "subtasks": [
+          {
+            "id": "5.1",
+            "title": "Upgrade React to v18",
+            "description": "Update react and react-dom to latest v18 versions",
+            "status": "pending"
+          },
+          {
+            "id": "5.2",
+            "title": "Update React types",
+            "description": "Update @types/react and @types/react-dom to v18 compatible versions",
+            "status": "pending"
+          },
+          {
+            "id": "5.3",
+            "title": "Update React rendering",
+            "description": "Update index.tsx to use React 18's createRoot API",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "title": "Modernize build scripts and tooling",
+        "description": "Update build scripts to use modern Node.js practices and remove hardcoded paths",
+        "status": "pending",
+        "priority": "low",
+        "tags": ["build", "scripts", "tooling"],
+        "dependencies": ["0", "2"],
+        "subtasks": [
+          {
+            "id": "6.1",
+            "title": "Remove NODE_OPTIONS workaround",
+            "description": "Remove NODE_OPTIONS=--openssl-legacy-provider after upgrading Webpack",
+            "status": "pending"
+          },
+          {
+            "id": "6.2",
+            "title": "Update package scripts",
+            "description": "Modernize npm scripts and add development helpers",
+            "status": "pending"
+          },
+          {
+            "id": "6.3",
+            "title": "Add type checking script",
+            "description": "Add npm script for TypeScript type checking without building",
+            "status": "pending"
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-30T23:42:39.459Z",
+      "updated": "2025-07-30T23:45:00.000Z",
+      "description": "Tasks for upgrading and modernizing the Design Lint Figma plugin TypeScript codebase"
+    }
+  }
+}

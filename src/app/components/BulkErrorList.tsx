@@ -7,10 +7,57 @@ import Banner from "./Banner";
 import Modal from "./Modal";
 import StylesPanel from "./StylesPanel";
 
-function BulkErrorList(props) {
-  const [currentError, setCurrentError] = useState(null);
-  const [panelError, setPanelError] = useState(null);
-  const [panelStyleSuggestion, setPanelStyleSuggestion] = useState(null);
+interface ErrorNode {
+  id: string;
+  name: string;
+  type: string;
+}
+
+interface StyleMatch {
+  count: number;
+  name: string;
+  id: string;
+  description?: string;
+}
+
+interface Error {
+  type: string;
+  message: string;
+  value: string;
+  node: ErrorNode;
+  count?: number;
+  nodes?: string[];
+  matches?: StyleMatch[];
+  suggestions?: StyleMatch[];
+}
+
+interface ErrorItem {
+  id: string;
+  errors: Error[];
+}
+
+interface BulkErrorListProps {
+  errorArray: ErrorItem[];
+  ignoredErrorArray: Error[];
+  borderRadiusValues: number[];
+  activeFilters: Set<string>;
+  onIgnoredUpdate: (error: Error) => void;
+  updateBorderRadius: (value: any) => void;
+  onIgnoreAll: (errors: any) => void;
+  initialLoadComplete: boolean;
+  libraries?: any[];
+  ignoredErrors?: any[];
+  onClick?: () => void;
+  onSelectedListUpdate?: (id: any) => void;
+}
+
+function BulkErrorList(props: BulkErrorListProps) {
+  const [currentError, setCurrentError] = useState<Error | null>(null);
+  const [panelError, setPanelError] = useState<Error | null>(null);
+  const [
+    panelStyleSuggestion,
+    setPanelStyleSuggestion
+  ] = useState<StyleMatch | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [panelVisible, setPanelVisible] = React.useState(false);
 
@@ -23,7 +70,7 @@ function BulkErrorList(props) {
     "effects"
   ];
 
-  const ignoredErrorsMap = {};
+  const ignoredErrorsMap: { [key: string]: Set<string> } = {};
   props.ignoredErrorArray.forEach(ignoredError => {
     const nodeId = ignoredError.node.id;
     if (!ignoredErrorsMap[nodeId]) {
@@ -42,8 +89,11 @@ function BulkErrorList(props) {
     return item.errors.length >= 1;
   });
 
-  const createBulkErrorList = (errorArray, ignoredErrorsMap) => {
-    const bulkErrorMap = {};
+  const createBulkErrorList = (
+    errorArray: ErrorItem[],
+    ignoredErrorsMap: { [key: string]: Set<string> }
+  ) => {
+    const bulkErrorMap: { [key: string]: Error } = {};
     errorArray.forEach(item => {
       const nodeId = item.id;
       const ignoredErrorValues = ignoredErrorsMap[nodeId] || new Set();

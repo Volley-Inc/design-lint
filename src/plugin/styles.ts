@@ -24,9 +24,6 @@ async function getLocalTextStyles() {
       letterSpacing: style.letterSpacing,
       lineHeight: style.lineHeight,
       textDecoration: style.textDecoration,
-      textAlignHorizontal: style.textAlignHorizontal,
-      textAlignVertical: style.textAlignVertical,
-      textAutoResize: style.textAutoResize,
       paragraphIndent: style.paragraphIndent,
       paragraphSpacing: style.paragraphSpacing,
       textCase: style.textCase
