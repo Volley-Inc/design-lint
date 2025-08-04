@@ -1,0 +1,129 @@
+name: Figma Plugin Validation
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'manifest.json'
+      - 'src/**'
+      - 'package.json'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'manifest.json'
+      - 'src/**'
+      - 'package.json'
+
+jobs:
+  validate-manifest:
+    name: Validate Figma Manifest
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Validate manifest.json structure
+        run: |
+          echo "Validating manifest.json..."
+          
+          # Check if manifest.json exists
+          if [ ! -f "manifest.json" ]; then
+            echo "::error::manifest.json not found"
+            exit 1
+          fi
+          
+          # Validate JSON syntax
+          if ! jq empty manifest.json 2>/dev/null; then
+            echo "::error::manifest.json is not valid JSON"
+            exit 1
+          fi
+          
+          # Check required fields
+          REQUIRED_FIELDS=("name" "id" "api" "main" "ui")
+          for field in "${REQUIRED_FIELDS[@]}"; do
+            if ! jq -e ".$field" manifest.json > /dev/null; then
+              echo "::error::Required field '$field' is missing from manifest.json"
+              exit 1
+            fi
+          done
+          
+          # Validate API version
+          API_VERSION=$(jq -r '.api' manifest.json)
+          if [ "$API_VERSION" != "1.0.0" ]; then
+            echo "::warning::API version is $API_VERSION, expected 1.0.0"
+          fi
+          
+          echo "✅ manifest.json validation passed"
+          
+      - name: Check file references
+        run: |
+          # Check if main and ui files exist
+          MAIN_FILE=$(jq -r '.main' manifest.json)
+          UI_FILE=$(jq -r '.ui' manifest.json)
+          
+          if [ ! -f "$MAIN_FILE" ]; then
+            echo "::error::Main file '$MAIN_FILE' referenced in manifest.json does not exist"
+            exit 1
+          fi
+          
+          if [ ! -f "$UI_FILE" ]; then
+            echo "::error::UI file '$UI_FILE' referenced in manifest.json does not exist"
+            exit 1
+          fi
+          
+          echo "✅ File references validation passed"
+          
+  validate-plugin-structure:
+    name: Validate Plugin Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Check for Figma API usage
+        run: |
+          echo "Checking for proper Figma API usage..."
+          
+          # Check for figma global usage
+          if ! grep -r "figma\." src/plugin/ > /dev/null; then
+            echo "::warning::No Figma API usage found in plugin code"
+          fi
+          
+          # Check for proper message handling
+          if ! grep -r "figma.ui.onmessage" src/plugin/ > /dev/null; then
+            echo "::warning::No figma.ui.onmessage handler found"
+          fi
+          
+          if ! grep -r "parent.postMessage" src/app/ > /dev/null; then
+            echo "::warning::No parent.postMessage usage found in UI code"
+          fi
+          
+      - name: Check plugin size
+        run: |
+          npm run build
+          
+          # Check output file sizes
+          MAX_SIZE_MB=5
+          for file in dist/*.js; do
+            SIZE=$(du -m "$file" | cut -f1)
+            if [ "$SIZE" -gt "$MAX_SIZE_MB" ]; then
+              echo "::warning::$file is ${SIZE}MB, which exceeds recommended size of ${MAX_SIZE_MB}MB"
+            fi
+          done
+          
+          # Calculate total size
+          TOTAL_SIZE=$(du -sm dist | cut -f1)
+          echo "Total plugin size: ${TOTAL_SIZE}MB"
+          echo "### 📦 Plugin Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "Total size: ${TOTAL_SIZE}MB" >> $GITHUB_STEP_SUMMARY
