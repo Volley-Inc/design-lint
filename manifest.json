@@ -1,11 +1,15 @@
 {
-  "name": "Design Lint",
-  "id": "801195587640428208",
+  "name": "Design Linter",
+  "id": "1534296567356005263",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
   "editorType": ["figma"],
   "networkAccess": {
     "allowedDomains": ["none"]
-  }
+  },
+  "teamId": "1103095995612849334"
 }
