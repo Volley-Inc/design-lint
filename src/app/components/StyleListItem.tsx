@@ -4,12 +4,8 @@ import { motion } from 'framer-motion';
 
 // Duplicate component that matches styleContent but has very small differences to work on the styles page.
 
-function ListItem({ style, index }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleToggle = () => {
-    setIsOpen((prevIsOpen) => !prevIsOpen);
-  };
+function ListItem({ style, index }: { style: any; index: number }) {
+  const [isOpen] = useState(false);
 
   function handleSelectAll(nodeArray) {
     const arrays = Object.values(nodeArray);
@@ -73,7 +69,7 @@ function ListItem({ style, index }) {
               src={require(`../assets/${nodeType.toLowerCase()}.svg`)}
             />
             <span className="sublist-item-label">
-              <span className="sublist-item-count">{nodeIds.length}</span>{' '}
+              <span className="sublist-item-count">{(nodeIds as any[]).length}</span>{' '}
               {capitalizeFirstLetter(nodeType)} Layers
             </span>
           </li>

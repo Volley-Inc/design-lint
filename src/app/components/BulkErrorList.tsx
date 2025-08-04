@@ -339,7 +339,7 @@ function BulkErrorList(props: BulkErrorListProps) {
           // Render the Preloader component when initialLoadComplete is false and there are no errors
           <PreloaderCSS />
         ) : bulkErrorList.length ? (
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {totalErrorsWithMatches > 0 && (
               <motion.div
                 key="banner"

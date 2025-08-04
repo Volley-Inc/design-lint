@@ -5,18 +5,14 @@ import {
   newCheckFills,
   newCheckEffects,
   determineFill,
-  gradientToCSS
+  gradientToCSS,
   // customCheckTextFills,
   // uncomment this as an example of a custom lint function ^
-} from "./lintingFunctions";
+} from './lintingFunctions';
 
-import { fetchRemoteStyles, groupLibrary } from "./remoteStyleFunctions";
+import { fetchRemoteStyles, groupLibrary } from './remoteStyleFunctions';
 
-const {
-  getLocalPaintStyles,
-  getLocalTextStyles,
-  getLocalEffectStyles
-} = require("./styles");
+const { getLocalPaintStyles, getLocalTextStyles, getLocalEffectStyles } = require('./styles');
 
 figma.showUI(__html__, { width: 360, height: 580 });
 
@@ -27,22 +23,21 @@ let localStylesLibrary = {};
 
 // Styles used in our page
 let usedRemoteStyles = {
-  name: "Remote Styles",
+  name: 'Remote Styles',
   fills: [],
   strokes: [],
   text: [],
-  effects: []
+  effects: [],
 };
 
 // Variables object we'll use for storing all the variables
 // found in our page.
 let variablesInUse = {
-  name: "Variables",
-  variables: []
+  name: 'Variables',
+  variables: [],
 };
 
 let colorVariables;
-let numbervariables;
 let variablesWithGroupedConsumers;
 
 figma.skipInvisibleInstanceChildren = true;
@@ -51,21 +46,21 @@ figma.skipInvisibleInstanceChildren = true;
 // This way we can store ignored errors per document rather than
 // sharing ignored errors across all documents.
 function generateUUID() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
-      v = c === "x" ? r : (r & 0x3) | 0x8;
+      v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
 
 function getDocumentUUID() {
   // Try to get the UUID from the document's plugin data
-  let uuid = figma.root.getPluginData("documentUUID");
+  let uuid = figma.root.getPluginData('documentUUID');
 
   // If the UUID does not exist (empty string), generate a new one and store it
   if (!uuid) {
     uuid = generateUUID();
-    figma.root.setPluginData("documentUUID", uuid);
+    figma.root.setPluginData('documentUUID', uuid);
   }
 
   return uuid;
@@ -74,20 +69,20 @@ function getDocumentUUID() {
 // Set the unique ID we use for client storage.
 const documentUUID = getDocumentUUID();
 
-figma.on("documentchange", _event => {
+figma.on('documentchange', (_event) => {
   // When a change happens in the document
   // send a message to the plugin to look for changes.'
   figma.ui.postMessage({
-    type: "change"
+    type: 'change',
   });
 });
 
-figma.ui.onmessage = msg => {
-  if (msg.type === "close") {
+figma.ui.onmessage = (msg) => {
+  if (msg.type === 'close') {
     figma.closePlugin();
   }
 
-  if (msg.type === "step-2") {
+  if (msg.type === 'step-2') {
     let layer = figma.getNodeById(msg.id);
     let layerArray = [];
 
@@ -101,27 +96,27 @@ figma.ui.onmessage = msg => {
     figma.viewport.scrollAndZoomIntoView(layerArray);
 
     let layerData = JSON.stringify(layer, [
-      "id",
-      "name",
-      "description",
-      "fills",
-      "key",
-      "type",
-      "remote",
-      "paints",
-      "fontName",
-      "fontSize",
-      "font"
+      'id',
+      'name',
+      'description',
+      'fills',
+      'key',
+      'type',
+      'remote',
+      'paints',
+      'fontName',
+      'fontSize',
+      'font',
     ]);
 
     figma.ui.postMessage({
-      type: "step-2-complete",
-      message: layerData
+      type: 'step-2-complete',
+      message: layerData,
     });
   }
 
   // Fetch a specific node by ID.
-  if (msg.type === "fetch-layer-data") {
+  if (msg.type === 'fetch-layer-data') {
     let layer = figma.getNodeById(msg.id);
     let layerArray = [];
 
@@ -135,119 +130,115 @@ figma.ui.onmessage = msg => {
     figma.viewport.scrollAndZoomIntoView(layerArray);
 
     let layerData = JSON.stringify(layer, [
-      "id",
-      "name",
-      "description",
-      "fills",
-      "key",
-      "type",
-      "remote",
-      "paints",
-      "fontName",
-      "fontSize",
-      "font"
+      'id',
+      'name',
+      'description',
+      'fills',
+      'key',
+      'type',
+      'remote',
+      'paints',
+      'fontName',
+      'fontSize',
+      'font',
     ]);
 
     figma.ui.postMessage({
-      type: "fetched layer",
-      message: layerData
+      type: 'fetched layer',
+      message: layerData,
     });
   }
 
   // Called when an update in the Figma file happens
   // so we can check what changed.
-  if (msg.type === "update-errors") {
+  if (msg.type === 'update-errors') {
     figma.ui.postMessage({
-      type: "updated errors",
-      errors: lint(originalNodeTree, msg.libraries)
+      type: 'updated errors',
+      errors: lint(originalNodeTree, msg.libraries),
     });
   }
 
   // Used only to update the styles page when its selected.
   async function handleUpdateStylesPage() {
     const resetRemoteStyles = {
-      name: "Remote Styles",
+      name: 'Remote Styles',
       fills: [],
       strokes: [],
       text: [],
-      effects: []
+      effects: [],
     };
 
     await fetchRemoteStyles(resetRemoteStyles);
 
-    const libraryWithGroupedConsumers = groupLibrary(resetRemoteStyles);
+    const libraryWithGroupedConsumers = groupLibrary(resetRemoteStyles) as {
+      name: string;
+      fills: Array<{ name: string; [key: string]: any }>;
+      text: Array<{ name: string; [key: string]: any }>;
+      strokes: Array<{ name: string; [key: string]: any }>;
+      effects: Array<{ name: string; [key: string]: any }>;
+    };
 
-    libraryWithGroupedConsumers.fills.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    libraryWithGroupedConsumers.text.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    libraryWithGroupedConsumers.strokes.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    libraryWithGroupedConsumers.effects.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    libraryWithGroupedConsumers.fills.sort((a, b) => a.name.localeCompare(b.name));
+    libraryWithGroupedConsumers.text.sort((a, b) => a.name.localeCompare(b.name));
+    libraryWithGroupedConsumers.strokes.sort((a, b) => a.name.localeCompare(b.name));
+    libraryWithGroupedConsumers.effects.sort((a, b) => a.name.localeCompare(b.name));
 
     figma.ui.postMessage({
-      type: "remote-styles-imported",
-      message: libraryWithGroupedConsumers
+      type: 'remote-styles-imported',
+      message: libraryWithGroupedConsumers,
     });
   }
 
   // Updates all the styles listed on the styles page.
-  if (msg.type === "update-styles-page") {
+  if (msg.type === 'update-styles-page') {
     handleUpdateStylesPage();
   }
 
   // Notify the user of an issue.
-  if (msg.type === "notify-user") {
+  if (msg.type === 'notify-user') {
     figma.notify(msg.message, { timeout: 1000 });
   }
 
   // Updates client storage with a new ignored error
   // when the user selects "ignore" from the context menu
-  if (msg.type === "update-storage") {
+  if (msg.type === 'update-storage') {
     let arrayToBeStored = JSON.stringify(msg.storageArray);
     figma.clientStorage.setAsync(documentUUID, arrayToBeStored);
   }
 
   // Clears all ignored errors
   // invoked from the settings menu
-  if (msg.type === "update-storage-from-settings") {
+  if (msg.type === 'update-storage-from-settings') {
     let arrayToBeStored = JSON.stringify(msg.storageArray);
     figma.clientStorage.setAsync(documentUUID, arrayToBeStored);
 
     figma.ui.postMessage({
-      type: "reset storage",
-      storage: arrayToBeStored
+      type: 'reset storage',
+      storage: arrayToBeStored,
     });
 
-    figma.notify("Cleared ignored errors", { timeout: 1000 });
+    figma.notify('Cleared ignored errors', { timeout: 1000 });
   }
 
   // Remembers the last tab selected in the UI and sets it
   // to be active (layers vs error by category view)
-  if (msg.type === "update-active-page-in-settings") {
+  if (msg.type === 'update-active-page-in-settings') {
     let pageToBeStored = JSON.stringify(msg.page);
-    figma.clientStorage.setAsync("storedActivePage", pageToBeStored);
+    figma.clientStorage.setAsync('storedActivePage', pageToBeStored);
   }
 
   // Changes the linting rules, invoked from the settings menu
-  if (msg.type === "update-lint-rules-from-settings") {
+  if (msg.type === 'update-lint-rules-from-settings') {
     lintVectors = msg.boolean;
   }
 
   // For when the user updates the border radius values to lint from the settings menu.
-  if (msg.type === "update-border-radius") {
+  if (msg.type === 'update-border-radius') {
     let newRadiusArray = null;
-    if (typeof msg.radiusValues === "string") {
-      let newString = msg.radiusValues.replace(/\s+/g, "");
-      newRadiusArray = newString.split(",");
-      newRadiusArray = newRadiusArray
-        .filter(x => x.trim().length && !isNaN(x))
-        .map(Number);
+    if (typeof msg.radiusValues === 'string') {
+      let newString = msg.radiusValues.replace(/\s+/g, '');
+      newRadiusArray = newString.split(',');
+      newRadiusArray = newRadiusArray.filter((x) => x.trim().length && !isNaN(x)).map(Number);
 
       // Most users won't add 0 to the array of border radius so let's add it in for them.
       if (newRadiusArray.indexOf(0) === -1) {
@@ -263,28 +254,28 @@ figma.ui.onmessage = msg => {
 
     // Save this value in client storage.
     let radiusToBeStored = JSON.stringify(borderRadiusArray);
-    figma.clientStorage.setAsync("storedRadiusValues", radiusToBeStored);
+    figma.clientStorage.setAsync('storedRadiusValues', radiusToBeStored);
 
     figma.ui.postMessage({
-      type: "fetched border radius",
-      storage: JSON.stringify(borderRadiusArray)
+      type: 'fetched border radius',
+      storage: JSON.stringify(borderRadiusArray),
     });
 
-    figma.notify("Saved border radius, this can be changed in settings", {
-      timeout: 1500
+    figma.notify('Saved border radius, this can be changed in settings', {
+      timeout: 1500,
     });
   }
 
-  if (msg.type === "reset-border-radius") {
+  if (msg.type === 'reset-border-radius') {
     borderRadiusArray = [0, 2, 4, 8, 16, 24, 32];
-    figma.clientStorage.setAsync("storedRadiusValues", []);
+    figma.clientStorage.setAsync('storedRadiusValues', []);
 
     figma.ui.postMessage({
-      type: "fetched border radius",
-      storage: JSON.stringify(borderRadiusArray)
+      type: 'fetched border radius',
+      storage: JSON.stringify(borderRadiusArray),
     });
 
-    figma.notify("Reset border radius value", { timeout: 1000 });
+    figma.notify('Reset border radius value', { timeout: 1000 });
   }
 
   // Function to check if a style key exists locally for text layers.
@@ -318,13 +309,13 @@ figma.ui.onmessage = msg => {
     try {
       node.textStyleId = importedStyle.id;
     } catch (error) {
-      console.error("Error applying remote style:", error);
+      console.error('Error applying remote style:', error);
     }
   }
 
   // Called from BulkErrorList when updating matching styles
   // or applying suggestion styles.
-  if (msg.type === "apply-styles") {
+  if (msg.type === 'apply-styles') {
     function applyLocalFillStyle(node, styleId) {
       node.fillStyleId = styleId;
     }
@@ -342,19 +333,19 @@ figma.ui.onmessage = msg => {
       const styleId = msg.error[field][index].id;
 
       if (
-        (msg.error.type === "text" && isStyleInUse(styleId)) ||
-        (msg.error.type === "text" && isStyleKeyLocal(styleKey))
+        (msg.error.type === 'text' && isStyleInUse(styleId)) ||
+        (msg.error.type === 'text' && isStyleKeyLocal(styleKey))
       ) {
         for (const nodeId of msg.error.nodes) {
           const node = figma.getNodeById(nodeId);
 
-          if (node && node.type === "TEXT") {
+          if (node && node.type === 'TEXT') {
             applyLocalStyle(node, styleId);
           }
         }
       } else if (
-        (msg.error.type === "fill" && isStyleInUse(styleId)) ||
-        (msg.error.type === "fill" && isStyleKeyLocal(styleKey))
+        (msg.error.type === 'fill' && isStyleInUse(styleId)) ||
+        (msg.error.type === 'fill' && isStyleKeyLocal(styleKey))
       ) {
         for (const nodeId of msg.error.nodes) {
           const node = figma.getNodeById(nodeId);
@@ -364,8 +355,8 @@ figma.ui.onmessage = msg => {
           }
         }
       } else if (
-        (msg.error.type === "stroke" && isStyleInUse(styleId)) ||
-        (msg.error.type === "stroke" && isStyleKeyLocal(styleKey))
+        (msg.error.type === 'stroke' && isStyleInUse(styleId)) ||
+        (msg.error.type === 'stroke' && isStyleKeyLocal(styleKey))
       ) {
         for (const nodeId of msg.error.nodes) {
           const node = figma.getNodeById(nodeId);
@@ -375,8 +366,8 @@ figma.ui.onmessage = msg => {
           }
         }
       } else if (
-        (msg.error.type === "effects" && isStyleInUse(styleId)) ||
-        (msg.error.type === "effects" && isStyleKeyLocal(styleKey))
+        (msg.error.type === 'effects' && isStyleInUse(styleId)) ||
+        (msg.error.type === 'effects' && isStyleKeyLocal(styleKey))
       ) {
         for (const nodeId of msg.error.nodes) {
           const node = figma.getNodeById(nodeId);
@@ -391,8 +382,8 @@ figma.ui.onmessage = msg => {
         try {
           importedStyle = await figma.importStyleByKeyAsync(styleKey);
         } catch (error) {
-          if (!error.message.includes("Cannot find style")) {
-            console.error("Error importing style:", error);
+          if (!error.message.includes('Cannot find style')) {
+            console.error('Error importing style:', error);
           }
         }
 
@@ -404,12 +395,12 @@ figma.ui.onmessage = msg => {
             for (const nodeId of batch) {
               const node = figma.getNodeById(nodeId);
 
-              if (node && node.type === "TEXT" && msg.error.type === "text") {
+              if (node && node.type === 'TEXT' && msg.error.type === 'text') {
                 await applyRemoteStyle(node, importedStyle);
-              } else if (node && msg.error.type === "fill") {
-                node.fillStyleId = importedStyle.id;
-              } else if (node && msg.error.type === "stroke") {
-                node.strokeStyleId = importedStyle.id;
+              } else if (node && msg.error.type === 'fill' && 'fillStyleId' in node) {
+                (node as any).fillStyleId = importedStyle.id;
+              } else if (node && msg.error.type === 'stroke' && 'strokeStyleId' in node) {
+                (node as any).strokeStyleId = importedStyle.id;
               }
             }
             await delay(3);
@@ -422,15 +413,15 @@ figma.ui.onmessage = msg => {
     // index is which of the multiple styles they chose from in the suggestions array.
     applyStylesToNodes(msg.field, msg.index);
     figma.notify(`Fixed ${msg.count} missing ${msg.error.type} styles`, {
-      timeout: 500
+      timeout: 500,
     });
   }
 
-  if (msg.type === "select-multiple-layers") {
+  if (msg.type === 'select-multiple-layers') {
     const layerArray = msg.nodeArray;
     let nodesToBeSelected = [];
 
-    layerArray.forEach(item => {
+    layerArray.forEach((item) => {
       let layer = figma.getNodeById(item);
       // Using selection and viewport requires an array.
       nodesToBeSelected.push(layer);
@@ -440,7 +431,7 @@ figma.ui.onmessage = msg => {
     figma.currentPage.selection = nodesToBeSelected;
     figma.viewport.scrollAndZoomIntoView(nodesToBeSelected);
     figma.notify(`${nodesToBeSelected.length} layers selected`, {
-      timeout: 750
+      timeout: 750,
     });
   }
 
@@ -455,7 +446,7 @@ figma.ui.onmessage = msg => {
       const newPaintStyle = figma.createPaintStyle();
 
       // Set the name and paint of the new paint style
-      if (title !== "") {
+      if (title !== '') {
         newPaintStyle.name = title;
       } else {
         newPaintStyle.name = `New Fill - ${currentFill}`;
@@ -467,13 +458,13 @@ figma.ui.onmessage = msg => {
       for (const node of nodeArray) {
         const layer = figma.getNodeById(node);
 
-        layer.fillStyleId = newPaintStyle.id;
+        if (layer && 'fillStyleId' in layer) {
+          (layer as any).fillStyleId = newPaintStyle.id;
+        }
       }
 
       // Notify the user that the paint style has been created and applied
-      figma.notify(
-        `Fill style created and applied to ${nodeArray.length} layers`
-      );
+      figma.notify(`Fill style created and applied to ${nodeArray.length} layers`);
     }
   }
 
@@ -488,12 +479,12 @@ figma.ui.onmessage = msg => {
 
       const newStrokeStyle = figma.createPaintStyle();
 
-      newStrokeStyle.name = "New Stroke Style";
+      newStrokeStyle.name = 'New Stroke Style';
 
-      if (title !== "") {
+      if (title !== '') {
         newStrokeStyle.name = title;
       } else {
-        newStrokeStyle.name = "New Stroke Style";
+        newStrokeStyle.name = 'New Stroke Style';
       }
 
       newStrokeStyle.paints = [stroke];
@@ -502,12 +493,12 @@ figma.ui.onmessage = msg => {
       for (const node of nodeArray) {
         const layer = figma.getNodeById(node);
 
-        layer.strokeStyleId = newStrokeStyle.id;
+        if (layer && 'strokeStyleId' in layer) {
+          (layer as any).strokeStyleId = newStrokeStyle.id;
+        }
       }
 
-      figma.notify(
-        `Stroke style created and applied to ${nodeArray.length} layers`
-      );
+      figma.notify(`Stroke style created and applied to ${nodeArray.length} layers`);
     }
   }
 
@@ -518,14 +509,14 @@ figma.ui.onmessage = msg => {
       const effects = node.effects;
 
       let effectType = node.effects[0].type;
-      if (effectType === "DROP_SHADOW") {
-        effectType = "Drop Shadow";
-      } else if (effectType === "INNER_SHADOW") {
-        effectType = "Inner Shadow";
-      } else if (effectType === "LAYER_BLUR") {
-        effectType = "Layer Blur";
+      if (effectType === 'DROP_SHADOW') {
+        effectType = 'Drop Shadow';
+      } else if (effectType === 'INNER_SHADOW') {
+        effectType = 'Inner Shadow';
+      } else if (effectType === 'LAYER_BLUR') {
+        effectType = 'Layer Blur';
       } else {
-        effectType = "Background Blur";
+        effectType = 'Background Blur';
       }
 
       const effectRadius = node.effects[0].radius;
@@ -534,7 +525,7 @@ figma.ui.onmessage = msg => {
       // Create a new effect style based on the effect properties of the node
       const newEffectStyle = figma.createEffectStyle();
 
-      if (title !== "") {
+      if (title !== '') {
         newEffectStyle.name = title;
       } else {
         newEffectStyle.name = `${effectType} - Radius: ${roundedRadius}`;
@@ -546,19 +537,19 @@ figma.ui.onmessage = msg => {
       for (const node of nodeArray) {
         const layer = figma.getNodeById(node);
 
-        layer.effectStyleId = newEffectStyle.id;
+        if (layer && 'effectStyleId' in layer) {
+          (layer as any).effectStyleId = newEffectStyle.id;
+        }
       }
 
       // Notify the user that the effect style has been created and applied
-      figma.notify(
-        `Effect style created and applied to ${nodeArray.length} layers`
-      );
+      figma.notify(`Effect style created and applied to ${nodeArray.length} layers`);
     }
   }
 
   // Utility for creating new text styles from the select menu
   async function createTextStyleFromNode(node, nodeArray, title) {
-    if (node.type === "TEXT") {
+    if (node.type === 'TEXT') {
       // // Load the font used in the text node
       // await figma.loadFontAsync(node.fontName);
 
@@ -581,13 +572,13 @@ figma.ui.onmessage = msg => {
         paragraphIndent: node.paragraphIndent,
         paragraphSpacing: node.paragraphSpacing,
         textCase: node.textCase,
-        textDecoration: node.textDecoration
+        textDecoration: node.textDecoration,
       };
 
       // Create a new text style based on the properties of the text node
       const newTextStyle = figma.createTextStyle();
 
-      if (title !== "") {
+      if (title !== '') {
         newTextStyle.name = title;
       } else {
         newTextStyle.name = `${textStyle.fontFamily} ${textStyle.fontStyle}`;
@@ -595,7 +586,7 @@ figma.ui.onmessage = msg => {
 
       newTextStyle.fontName = {
         family: textStyle.fontFamily,
-        style: textStyle.fontStyle
+        style: textStyle.fontStyle,
       };
       newTextStyle.fontSize = textStyle.fontSize;
       newTextStyle.letterSpacing = textStyle.letterSpacing;
@@ -609,40 +600,33 @@ figma.ui.onmessage = msg => {
       for (const textNode of nodeArray) {
         const layer = figma.getNodeById(textNode);
 
-        if (layer.type === "TEXT") {
+        if (layer.type === 'TEXT') {
           layer.textStyleId = newTextStyle.id;
         }
       }
 
-      figma.notify(
-        `Text style created and applied to ${nodeArray.length} layers`
-      );
+      figma.notify(`Text style created and applied to ${nodeArray.length} layers`);
     }
   }
 
-  if (msg.type === "create-style") {
+  if (msg.type === 'create-style') {
     // Grab a node to use so we have properties to create a style
     const node = figma.getNodeById(msg.error.nodes[0]);
 
-    if (msg.error.type === "text") {
+    if (msg.error.type === 'text') {
       createTextStyleFromNode(node, msg.error.nodes, msg.title);
-    } else if (msg.error.type === "fill") {
+    } else if (msg.error.type === 'fill') {
       createPaintStyleFromNode(node, msg.error.nodes, msg.title);
-    } else if (msg.error.type === "effects") {
+    } else if (msg.error.type === 'effects') {
       createEffectStyleFromNode(node, msg.error.nodes, msg.title);
-    } else if (msg.error.type === "stroke") {
+    } else if (msg.error.type === 'stroke') {
       createStrokeStyleFromNode(node, msg.error.nodes, msg.title);
     }
   }
 
   // Serialize nodes to pass back to the UI.
   function serializeNodes(nodes) {
-    let serializedNodes = JSON.stringify(nodes, [
-      "name",
-      "type",
-      "children",
-      "id"
-    ]);
+    let serializedNodes = JSON.stringify(nodes, ['name', 'type', 'children', 'id']);
 
     return serializedNodes;
   }
@@ -660,13 +644,13 @@ figma.ui.onmessage = msg => {
       const newObject = {
         id: node.id,
         errors: isLayerLocked ? [] : determineType(node, libraries),
-        children: []
+        children: [],
       };
 
       // Check if the node has children.
       if (nodeChildren) {
         // Recursively run this function to flatten out children and grandchildren nodes.
-        newObject.children = node.children.map(childNode => childNode.id);
+        newObject.children = node.children.map((childNode) => childNode.id);
         errorArray.push(...lint(node.children, libraries, isLayerLocked));
       }
 
@@ -677,7 +661,7 @@ figma.ui.onmessage = msg => {
   }
 
   function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
+    return new Promise((resolve) => setTimeout(resolve, time));
   }
 
   // Counter to keep track of the total number of processed nodes
@@ -694,18 +678,14 @@ figma.ui.onmessage = msg => {
       const newObject = {
         id: node.id,
         errors: isLayerLocked ? [] : determineType(node, libraries),
-        children: []
+        children: [],
       };
 
       // Check if the node has children.
       if (node.children) {
         // Recursively run this function to flatten out children and grandchildren nodes.
-        newObject.children = node.children.map(childNode => childNode.id);
-        for await (const result of lintAsync(
-          node.children,
-          libraries,
-          isLayerLocked
-        )) {
+        newObject.children = node.children.map((childNode) => childNode.id);
+        for await (const result of lintAsync(node.children, libraries, isLayerLocked)) {
           errorArray.push(...result);
         }
       }
@@ -730,7 +710,7 @@ figma.ui.onmessage = msg => {
     }
   }
 
-  if (msg.type === "step-3") {
+  if (msg.type === 'step-3') {
     // Use an async function to handle the asynchronous generator
     async function processLint() {
       const finalResult = [];
@@ -741,15 +721,15 @@ figma.ui.onmessage = msg => {
 
       // Pass the final result back to the UI to be displayed.
       figma.ui.postMessage({
-        type: "step-3-complete",
+        type: 'step-3-complete',
         errors: finalResult,
-        message: serializeNodes(originalNodeTree)
+        message: serializeNodes(originalNodeTree),
       });
     }
 
     // Start the lint process
     figma.notify(`Design Lint is running and automatically detect changes`, {
-      timeout: 1500
+      timeout: 1500,
     });
 
     processLint();
@@ -757,52 +737,46 @@ figma.ui.onmessage = msg => {
 
   // Import local styles to use as recommendations
   // This function doesn't save the styles, that's "save-library"
-  if (msg.type === "find-local-styles") {
-    (async function() {
+  if (msg.type === 'find-local-styles') {
+    (async function () {
       const paintStylesData = await getLocalPaintStyles();
       const textStylesData = await getLocalTextStyles();
       const effectStylesData = await getLocalEffectStyles();
       const fileName = figma.root.name;
-      const totalStyles =
-        effectStylesData.length +
-        textStylesData.length +
-        paintStylesData.length;
+      const totalStyles = effectStylesData.length + textStylesData.length + paintStylesData.length;
 
       const localStyles = {
         name: fileName,
         effects: effectStylesData,
         fills: paintStylesData,
         text: textStylesData,
-        styles: totalStyles
+        styles: totalStyles,
       };
 
       // Send the updated libraries array to the UI layer
       figma.ui.postMessage({
-        type: "local-styles-imported",
-        message: localStyles
+        type: 'local-styles-imported',
+        message: localStyles,
       });
     })();
   }
 
   // Saves local styles as a library to use in every file.
-  if (msg.type === "save-library") {
-    (async function() {
+  if (msg.type === 'save-library') {
+    (async function () {
       const paintStylesData = await getLocalPaintStyles();
       const textStylesData = await getLocalTextStyles();
       const effectStylesData = await getLocalEffectStyles();
       const fileName = figma.root.name;
-      const totalStyles =
-        effectStylesData.length +
-        textStylesData.length +
-        paintStylesData.length;
-      const key = "libraryKey";
+      const totalStyles = effectStylesData.length + textStylesData.length + paintStylesData.length;
+      const key = 'libraryKey';
 
       const library = {
         name: fileName,
         effects: effectStylesData,
         fills: paintStylesData,
         text: textStylesData,
-        styles: totalStyles
+        styles: totalStyles,
       };
 
       // Fetch the stored libraries from client storage
@@ -810,7 +784,7 @@ figma.ui.onmessage = msg => {
 
       // Check if a library with the same name already exists in the libraries array
       const existingLibraryIndex = storedLibraries.findIndex(
-        storedLibrary => storedLibrary.name === library.name
+        (storedLibrary) => storedLibrary.name === library.name
       );
 
       if (existingLibraryIndex !== -1) {
@@ -826,26 +800,26 @@ figma.ui.onmessage = msg => {
 
       // Send the updated libraries array to the UI layer
       figma.ui.postMessage({
-        type: "library-imported",
-        message: storedLibraries
+        type: 'library-imported',
+        message: storedLibraries,
       });
     })();
   }
 
-  if (msg.type === "remove-library") {
-    figma.clientStorage.setAsync("libraryKey", msg.storageArray);
+  if (msg.type === 'remove-library') {
+    figma.clientStorage.setAsync('libraryKey', msg.storageArray);
   }
 
   // Initialize the app
-  if (msg.type === "run-app") {
-    if (figma.currentPage.selection.length === 0 && msg.selection === "user") {
+  if (msg.type === 'run-app') {
+    if (figma.currentPage.selection.length === 0 && msg.selection === 'user') {
       figma.notify(`Select some layers, then try running again!`, {
-        timeout: 2000
+        timeout: 2000,
       });
 
       // If the user hasn't selected anything, show the empty state.
       figma.ui.postMessage({
-        type: "show-empty-state"
+        type: 'show-empty-state',
       });
 
       return;
@@ -855,10 +829,10 @@ figma.ui.onmessage = msg => {
 
       // Determine whether we scan the page for the user,
       // or use their selection
-      if (msg.selection === "user") {
+      if (msg.selection === 'user') {
         nodes = figma.currentPage.selection;
         firstNode.push(figma.currentPage.selection[0]);
-      } else if (msg.selection === "page") {
+      } else if (msg.selection === 'page') {
         nodes = figma.currentPage.children;
         firstNode.push(nodes[0]);
       }
@@ -869,26 +843,26 @@ figma.ui.onmessage = msg => {
 
       // Show the preloader until we're ready to render content.
       figma.ui.postMessage({
-        type: "show-preloader"
+        type: 'show-preloader',
       });
 
       // Fetch the ignored errors and libraries from client storage
       const ignoredErrorsPromise = figma.clientStorage.getAsync(documentUUID);
-      const librariesPromise = figma.clientStorage.getAsync("libraryKey");
+      const librariesPromise = figma.clientStorage.getAsync('libraryKey');
 
       Promise.all([ignoredErrorsPromise, librariesPromise]).then(
         async ([ignoredErrors, libraries]) => {
           if (ignoredErrors && ignoredErrors.length) {
             figma.ui.postMessage({
-              type: "fetched storage",
-              storage: ignoredErrors
+              type: 'fetched storage',
+              storage: ignoredErrors,
             });
           }
 
           if (libraries && libraries.length) {
             figma.ui.postMessage({
-              type: "library-imported-from-storage",
-              message: libraries
+              type: 'library-imported-from-storage',
+              message: libraries,
             });
           }
 
@@ -898,22 +872,22 @@ figma.ui.onmessage = msg => {
             const nodes = currentPage
               .findAllWithCriteria({
                 types: [
-                  "TEXT",
-                  "FRAME",
-                  "COMPONENT",
-                  "RECTANGLE",
-                  "ELLIPSE",
-                  "INSTANCE",
-                  "VECTOR",
-                  "LINE"
-                ]
+                  'TEXT',
+                  'FRAME',
+                  'COMPONENT',
+                  'RECTANGLE',
+                  'ELLIPSE',
+                  'INSTANCE',
+                  'VECTOR',
+                  'LINE',
+                ],
               })
-              .filter(node => {
+              .filter((node) => {
                 // Check for remote styles
                 return (
                   node.fillStyleId ||
                   node.strokeStyleId ||
-                  (node.type === "TEXT" && node.textStyleId) ||
+                  (node.type === 'TEXT' && node.textStyleId) ||
                   node.effectStyleId
                 );
               });
@@ -922,10 +896,10 @@ figma.ui.onmessage = msg => {
               if (node.fillStyleId) {
                 const styleId = node.fillStyleId;
 
-                if (typeof styleId !== "symbol") {
+                if (typeof styleId !== 'symbol') {
                   // Check if the style with the given styleId already exists in the usedRemoteStyles.fills array
                   const existingStyle = usedRemoteStyles.fills.find(
-                    style => style.id === styleId
+                    (style) => style.id === styleId
                   );
 
                   if (existingStyle) {
@@ -934,7 +908,7 @@ figma.ui.onmessage = msg => {
                     existingStyle.consumers.push(node);
                   } else {
                     // If the style does not exist, create a new style object and push it to the usedRemoteStyles.fills array
-                    const style = figma.getStyleById(styleId);
+                    const style = figma.getStyleById(styleId) as PaintStyle;
 
                     // Prevents against broken image fills.
                     if (style === null) {
@@ -945,24 +919,24 @@ figma.ui.onmessage = msg => {
                     let nodeFillType = node.fills[0].type;
                     let cssSyntax = null;
 
-                    if (nodeFillType === "SOLID") {
+                    if (nodeFillType === 'SOLID') {
                       cssSyntax = currentFill;
                     } else if (
-                      nodeFillType !== "SOLID" &&
-                      nodeFillType !== "VIDEO" &&
-                      nodeFillType !== "IMAGE"
+                      nodeFillType !== 'SOLID' &&
+                      nodeFillType !== 'VIDEO' &&
+                      nodeFillType !== 'IMAGE'
                     ) {
                       cssSyntax = gradientToCSS(node.fills[0]);
                     }
 
                     usedRemoteStyles.fills.push({
                       id: node.fillStyleId,
-                      type: "fill",
+                      type: 'fill',
                       paint: style.paints[0],
                       name: style.name,
                       count: 1,
                       consumers: [node],
-                      fillColor: cssSyntax
+                      fillColor: cssSyntax,
                     });
                   }
                 }
@@ -970,10 +944,10 @@ figma.ui.onmessage = msg => {
 
               if (node.strokeStyleId) {
                 const styleId = node.strokeStyleId;
-                if (typeof styleId !== "symbol") {
+                if (typeof styleId !== 'symbol') {
                   // Check if the stroke style with the given styleId already exists in the usedRemoteStyles.strokes array
                   const existingStyle = usedRemoteStyles.strokes.find(
-                    style => style.id === styleId
+                    (style) => style.id === styleId
                   );
 
                   if (existingStyle) {
@@ -982,40 +956,35 @@ figma.ui.onmessage = msg => {
                     existingStyle.consumers.push(node);
                   } else {
                     // If the stroke style does not exist, create a new style object and push it to the usedRemoteStyles.strokes array
-                    const style = figma.getStyleById(styleId);
+                    const style = figma.getStyleById(styleId) as PaintStyle;
 
                     let nodeFillType = style.paints[0].type;
                     let cssSyntax = null;
 
-                    if (nodeFillType === "SOLID") {
+                    if (nodeFillType === 'SOLID') {
                       cssSyntax = determineFill(style.paints);
-                    } else if (
-                      nodeFillType !== "IMAGE" &&
-                      nodeFillType !== "VIDEO"
-                    ) {
+                    } else if (nodeFillType !== 'IMAGE' && nodeFillType !== 'VIDEO') {
                       cssSyntax = gradientToCSS(node.strokes[0]);
                     }
 
                     usedRemoteStyles.strokes.push({
                       id: node.strokeStyleId,
-                      type: "stroke",
+                      type: 'stroke',
                       paint: style.paints[0],
                       name: style.name,
                       count: 1,
                       consumers: [node],
-                      fillColor: cssSyntax
+                      fillColor: cssSyntax,
                     });
                   }
                 }
               }
 
-              if (node.type === "TEXT" && node.textStyleId) {
+              if (node.type === 'TEXT' && node.textStyleId) {
                 const styleId = node.textStyleId;
-                if (typeof styleId !== "symbol") {
+                if (typeof styleId !== 'symbol') {
                   // Check if the text style with the given styleId already exists in the usedRemoteStyles.text array
-                  const existingStyle = usedRemoteStyles.text.find(
-                    style => style.id === styleId
-                  );
+                  const existingStyle = usedRemoteStyles.text.find((style) => style.id === styleId);
 
                   if (existingStyle) {
                     // If the text style exists, update the count and consumers properties
@@ -1023,11 +992,11 @@ figma.ui.onmessage = msg => {
                     existingStyle.consumers.push(node);
                   } else {
                     // If the text style does not exist, create a new style object and push it to the usedRemoteStyles.text array
-                    const style = figma.getStyleById(styleId);
+                    const style = figma.getStyleById(styleId) as TextStyle;
 
                     usedRemoteStyles.text.push({
                       id: node.textStyleId,
-                      type: "text",
+                      type: 'text',
                       name: style.name,
                       description: style.description,
                       key: style.key,
@@ -1042,11 +1011,11 @@ figma.ui.onmessage = msg => {
                         paragraphIndent: style.paragraphIndent,
                         paragraphSpacing: style.paragraphSpacing,
                         fontFamily: style.fontName.family,
-                        textAlignHorizontal: style.textAlignHorizontal,
-                        textAlignVertical: style.textAlignVertical,
-                        textAutoResize: style.textAutoResize,
-                        textCase: style.textCase
-                      }
+                        textAlignHorizontal: (style as any).textAlignHorizontal,
+                        textAlignVertical: (style as any).textAlignVertical,
+                        textAutoResize: (style as any).textAutoResize,
+                        textCase: style.textCase,
+                      },
                     });
                   }
                 }
@@ -1054,10 +1023,10 @@ figma.ui.onmessage = msg => {
 
               if (node.effectStyleId) {
                 const styleId = node.effectStyleId;
-                if (typeof styleId !== "symbol") {
+                if (typeof styleId !== 'symbol') {
                   // Check if the effect style with the given styleId already exists in the usedRemoteStyles.effects array
                   const existingStyle = usedRemoteStyles.effects.find(
-                    style => style.id === styleId
+                    (style) => style.id === styleId
                   );
 
                   if (existingStyle) {
@@ -1066,15 +1035,15 @@ figma.ui.onmessage = msg => {
                     existingStyle.consumers.push(node);
                   } else {
                     // If the effect style does not exist, create a new style object and push it to the usedRemoteStyles.effects array
-                    const style = figma.getStyleById(styleId);
+                    const style = figma.getStyleById(styleId) as EffectStyle;
 
                     usedRemoteStyles.effects.push({
                       id: node.effectStyleId,
-                      type: "effect",
+                      type: 'effect',
                       effects: style.effects,
                       name: style.name,
                       count: 1,
-                      consumers: [node]
+                      consumers: [node],
                     });
                   }
                 }
@@ -1086,10 +1055,10 @@ figma.ui.onmessage = msg => {
 
           await findRemoteStyles();
 
-          const groupConsumersByType = consumers => {
+          const groupConsumersByType = (consumers) => {
             const groupedConsumers = {};
 
-            consumers.forEach(consumer => {
+            consumers.forEach((consumer) => {
               let nodeType = consumer.type;
               let nodeId = consumer.id;
 
@@ -1104,16 +1073,14 @@ figma.ui.onmessage = msg => {
           };
 
           // Function to apply groupConsumersByType to the global styles library
-          const applyGroupingToLibrary = globalStylesLibrary => {
+          const applyGroupingToLibrary = (globalStylesLibrary) => {
             return Object.fromEntries(
               Object.entries(globalStylesLibrary).map(([key, value]) => {
                 // Check if the value is an array (i.e., styles)
                 if (Array.isArray(value)) {
                   // Apply the groupConsumersByType function to the styles
-                  const stylesWithGroupedConsumers = value.map(style => {
-                    const groupedConsumers = groupConsumersByType(
-                      style.consumers
-                    );
+                  const stylesWithGroupedConsumers = value.map((style) => {
+                    const groupedConsumers = groupConsumersByType(style.consumers);
                     return { ...style, groupedConsumers };
                   });
                   return [key, stylesWithGroupedConsumers];
@@ -1131,13 +1098,11 @@ figma.ui.onmessage = msg => {
           usedRemoteStyles.strokes.sort((a, b) => a.name.localeCompare(b.name));
           usedRemoteStyles.effects.sort((a, b) => a.name.localeCompare(b.name));
 
-          const libraryWithGroupedConsumers = applyGroupingToLibrary(
-            usedRemoteStyles
-          );
+          const libraryWithGroupedConsumers = applyGroupingToLibrary(usedRemoteStyles);
 
           figma.ui.postMessage({
-            type: "remote-styles-imported",
-            message: libraryWithGroupedConsumers
+            type: 'remote-styles-imported',
+            message: libraryWithGroupedConsumers,
           });
 
           const updateLocalStylesLibrary = async () => {
@@ -1145,16 +1110,14 @@ figma.ui.onmessage = msg => {
             const textStylesData = await getLocalTextStyles();
             const effectStylesData = await getLocalEffectStyles();
             const totalStyles =
-              effectStylesData.length +
-              textStylesData.length +
-              paintStylesData.length;
+              effectStylesData.length + textStylesData.length + paintStylesData.length;
 
             const localStyles = {
-              name: "Local Styles",
+              name: 'Local Styles',
               effects: effectStylesData,
               fills: paintStylesData,
               text: textStylesData,
-              styles: totalStyles
+              styles: totalStyles,
             };
 
             // Update the global variable
@@ -1162,8 +1125,8 @@ figma.ui.onmessage = msg => {
 
             // Send the updated libraries array to the UI layer
             figma.ui.postMessage({
-              type: "local-styles-imported",
-              message: localStyles
+              type: 'local-styles-imported',
+              message: localStyles,
             });
           };
 
@@ -1177,27 +1140,27 @@ figma.ui.onmessage = msg => {
             const nodes = currentPage
               .findAllWithCriteria({
                 types: [
-                  "TEXT",
-                  "BOOLEAN_OPERATION",
-                  "FRAME",
-                  "COMPONENT",
-                  "COMPONENT_SET",
-                  "GROUP",
-                  "SECTION",
-                  "STAR",
-                  "RECTANGLE",
-                  "POLYGON",
-                  "ELLIPSE",
-                  "INSTANCE",
-                  "VECTOR",
-                  "LINE"
-                ]
+                  'TEXT',
+                  'BOOLEAN_OPERATION',
+                  'FRAME',
+                  'COMPONENT',
+                  'COMPONENT_SET',
+                  'GROUP',
+                  'SECTION',
+                  'STAR',
+                  'RECTANGLE',
+                  'POLYGON',
+                  'ELLIPSE',
+                  'INSTANCE',
+                  'VECTOR',
+                  'LINE',
+                ],
               })
-              .filter(node => {
+              .filter((node) => {
                 return node.boundVariables;
               });
 
-            const isNotEmpty = obj => {
+            const isNotEmpty = (obj) => {
               return Object.keys(obj).length !== 0;
             };
 
@@ -1210,7 +1173,7 @@ figma.ui.onmessage = msg => {
                 const boundVariables = node.boundVariables;
 
                 // Loop through all the variables on this node.
-                Object.keys(boundVariables).forEach(async key => {
+                Object.keys(boundVariables).forEach(async (key) => {
                   const variableObject = boundVariables[key];
                   let variableId;
                   let isFill = false;
@@ -1219,13 +1182,13 @@ figma.ui.onmessage = msg => {
                   // depending on how they're used, so the variable id may deeper
                   // in the object, so we check for that here.
 
-                  if (key === "fills") {
+                  if (key === 'fills') {
                     // Use the first fill since variables are only one fill in length.
                     variableId = variableObject[0].id;
                     isFill = true;
-                  } else if (key === "componentProperties") {
+                  } else if (key === 'componentProperties') {
                     // We may need a loop if components can have multiple properties
-                    variableId = variableObject["Has Items"].id;
+                    variableId = variableObject['Has Items'].id;
                   } else {
                     // All other variable types
                     variableId = variableObject.id;
@@ -1233,7 +1196,7 @@ figma.ui.onmessage = msg => {
 
                   // Check if a variable already exists in the variablesInUse array
                   const existingVariable = variablesInUse.variables.find(
-                    variable => variable.id === variableId
+                    (variable) => variable.id === variableId
                   );
 
                   if (existingVariable) {
@@ -1243,9 +1206,7 @@ figma.ui.onmessage = msg => {
                   } else {
                     try {
                       // If the variable does not exist, create a new variable object and push it to the variablesInUse fills array
-                      const variable = figma.variables.getVariableById(
-                        variableId
-                      );
+                      const variable = figma.variables.getVariableById(variableId);
 
                       // console.log(variable);
 
@@ -1257,37 +1218,36 @@ figma.ui.onmessage = msg => {
                       const firstKey = keys[0];
                       let typeLabel;
 
-                      if (variable.resolvedType === "FLOAT") {
-                        typeLabel = "number";
-                      } else if (variable.resolvedType === "BOOLEAN") {
-                        typeLabel = "boolean";
-                      } else if (variable.resolvedType === "STRING") {
-                        typeLabel = "string";
-                      } else if (variable.resolvedType === "COLOR") {
-                        typeLabel = "color";
+                      if (variable.resolvedType === 'FLOAT') {
+                        typeLabel = 'number';
+                      } else if (variable.resolvedType === 'BOOLEAN') {
+                        typeLabel = 'boolean';
+                      } else if (variable.resolvedType === 'STRING') {
+                        typeLabel = 'string';
+                      } else if (variable.resolvedType === 'COLOR') {
+                        typeLabel = 'color';
                       }
 
-                      if (isFill === true) {
-                        if (typeof node.fills === "symbol") {
+                      if (isFill === true && 'fills' in node) {
+                        const nodeWithFills = node as any;
+                        if (typeof nodeWithFills.fills === 'symbol') {
                           return;
                         }
-                        let currentFill = determineFill(node.fills);
-                        let nodeFillType = node.fills[0].type;
+                        let currentFill = determineFill(nodeWithFills.fills);
+                        let nodeFillType = nodeWithFills.fills[0].type;
                         let cssSyntax = null;
 
-                        if (nodeFillType === "SOLID") {
+                        if (nodeFillType === 'SOLID') {
                           cssSyntax = currentFill;
                         } else if (
-                          nodeFillType !== "SOLID" &&
-                          nodeFillType !== "VIDEO" &&
-                          nodeFillType !== "IMAGE"
+                          nodeFillType !== 'SOLID' &&
+                          nodeFillType !== 'VIDEO' &&
+                          nodeFillType !== 'IMAGE'
                         ) {
-                          cssSyntax = gradientToCSS(node.fills[0]);
+                          cssSyntax = gradientToCSS(nodeWithFills.fills[0]);
                         }
 
-                        const capitalizedHexValue = currentFill
-                          .toUpperCase()
-                          .replace("#", "");
+                        const capitalizedHexValue = currentFill.toUpperCase().replace('#', '');
 
                         variablesInUse.variables.push({
                           id: variableId,
@@ -1301,15 +1261,15 @@ figma.ui.onmessage = msg => {
                           valuesByMode: variable.valuesByMode,
                           consumers: [node],
                           value: capitalizedHexValue,
-                          cssSyntax: cssSyntax
+                          cssSyntax: cssSyntax,
                         });
                       } else {
                         let formattedValue;
 
                         if (variable.valuesByMode[firstKey] === true) {
-                          formattedValue = "True";
+                          formattedValue = 'True';
                         } else if (variable.valuesByMode[firstKey] === false) {
-                          formattedValue = "False";
+                          formattedValue = 'False';
                         } else {
                           formattedValue = variable.valuesByMode[firstKey];
                         }
@@ -1326,7 +1286,7 @@ figma.ui.onmessage = msg => {
                           valuesByMode: variable.valuesByMode,
                           consumers: [node],
                           value: formattedValue,
-                          cssSyntax: null
+                          cssSyntax: null,
                         });
                       }
                     } catch (err) {
@@ -1339,10 +1299,10 @@ figma.ui.onmessage = msg => {
           }
 
           findVariables().then(() => {
-            const groupConsumersByType = consumers => {
+            const groupConsumersByType = (consumers) => {
               const groupedConsumers = {};
 
-              consumers.forEach(consumer => {
+              consumers.forEach((consumer) => {
                 let nodeType = consumer.type;
                 let nodeId = consumer.id;
 
@@ -1357,20 +1317,16 @@ figma.ui.onmessage = msg => {
             };
 
             // Function to apply groupConsumersByType to the global variable library
-            const applyGroupingToLibrary = variablesLibrary => {
+            const applyGroupingToLibrary = (variablesLibrary) => {
               return Object.fromEntries(
                 Object.entries(variablesLibrary).map(([key, value]) => {
                   // Check if the value is an array
                   if (Array.isArray(value)) {
                     // Apply the groupConsumersByType function to the variables
-                    const variablesWithGroupedConsumers = value.map(
-                      variable => {
-                        const groupedConsumers = groupConsumersByType(
-                          variable.consumers
-                        );
-                        return { ...variable, groupedConsumers };
-                      }
-                    );
+                    const variablesWithGroupedConsumers = value.map((variable) => {
+                      const groupedConsumers = groupConsumersByType(variable.consumers);
+                      return { ...variable, groupedConsumers };
+                    });
                     return [key, variablesWithGroupedConsumers];
                   } else {
                     // For non-array properties, copy the original value
@@ -1381,19 +1337,12 @@ figma.ui.onmessage = msg => {
             };
 
             // Organize the array alphabtically
-            variablesInUse.variables.sort((a, b) =>
-              a.name.localeCompare(b.name)
-            );
+            variablesInUse.variables.sort((a, b) => a.name.localeCompare(b.name));
             colorVariables = variablesInUse.variables.filter(
-              variable => variable.type === "color"
-            );
-            numbervariables = variablesInUse.variables.filter(
-              variable => variable.type === "number"
+              (variable) => variable.type === 'color'
             );
 
-            variablesWithGroupedConsumers = applyGroupingToLibrary(
-              variablesInUse
-            );
+            variablesWithGroupedConsumers = applyGroupingToLibrary(variablesInUse);
 
             // Let the UI know we're done and send the
             // variables back to be displayed.
@@ -1406,30 +1355,30 @@ figma.ui.onmessage = msg => {
 
           // Now that libraries are available, call lint with libraries and localStylesLibrary, then send the message
           figma.ui.postMessage({
-            type: "step-1",
+            type: 'step-1',
             message: serializeNodes(nodes),
-            errors: lint(firstNode, libraries)
+            errors: lint(firstNode, libraries),
           });
         }
       );
 
-      figma.clientStorage.getAsync("storedActivePage").then(result => {
+      figma.clientStorage.getAsync('storedActivePage').then((result) => {
         if (result.length) {
           figma.ui.postMessage({
-            type: "fetched active page",
-            storage: result
+            type: 'fetched active page',
+            storage: result,
           });
         }
       });
 
-      figma.clientStorage.getAsync("storedRadiusValues").then(result => {
+      figma.clientStorage.getAsync('storedRadiusValues').then((result) => {
         if (result.length) {
           borderRadiusArray = JSON.parse(result);
           borderRadiusArray = borderRadiusArray.sort((a, b) => a - b);
 
           figma.ui.postMessage({
-            type: "fetched border radius",
-            storage: result
+            type: 'fetched border radius',
+            storage: result,
           });
         }
       });
@@ -1438,45 +1387,45 @@ figma.ui.onmessage = msg => {
 
   function determineType(node, libraries) {
     switch (node.type) {
-      case "SLICE":
-      case "GROUP": {
+      case 'SLICE':
+      case 'GROUP': {
         // Groups styles apply to their children so we can skip this node type.
         let errors = [];
         return errors;
       }
-      case "BOOLEAN_OPERATION":
-      case "VECTOR": {
+      case 'BOOLEAN_OPERATION':
+      case 'VECTOR': {
         return lintVectorRules(node, libraries);
       }
-      case "POLYGON":
-      case "STAR":
-      case "ELLIPSE": {
+      case 'POLYGON':
+      case 'STAR':
+      case 'ELLIPSE': {
         return lintShapeRules(node, libraries);
       }
-      case "FRAME": {
+      case 'FRAME': {
         return lintFrameRules(node, libraries);
       }
-      case "SECTION": {
+      case 'SECTION': {
         return lintSectionRules(node, libraries);
       }
-      case "INSTANCE":
-      case "RECTANGLE": {
+      case 'INSTANCE':
+      case 'RECTANGLE': {
         return lintRectangleRules(node, libraries);
       }
-      case "COMPONENT": {
+      case 'COMPONENT': {
         return lintComponentRules(node, libraries);
       }
-      case "COMPONENT_SET": {
+      case 'COMPONENT_SET': {
         // Component Set is the frame that wraps a set of variants
         // the variants within the set are still linted as components (lintComponentRules)
         // this type is generally only present where the variant is defined so it
         // doesn't need as many linting requirements.
         return lintVariantWrapperRules(node, libraries);
       }
-      case "TEXT": {
+      case 'TEXT': {
         return lintTextRules(node, libraries);
       }
-      case "LINE": {
+      case 'LINE': {
         return lintLineRules(node, libraries);
       }
       default: {
@@ -1495,29 +1444,10 @@ figma.ui.onmessage = msg => {
     //   );
     // }
 
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
     checkRadius(node, errors, borderRadiusArray);
-    newCheckEffects(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
-    newCheckStrokes(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
+    newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
     return errors;
   }
@@ -1526,14 +1456,7 @@ figma.ui.onmessage = msg => {
     let errors = [];
 
     // checkFills(node, errors);
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
 
     return errors;
   }
@@ -1541,20 +1464,8 @@ figma.ui.onmessage = msg => {
   function lintLineRules(node, libraries) {
     let errors = [];
 
-    newCheckStrokes(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
-    newCheckEffects(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
+    newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
     return errors;
   }
@@ -1563,29 +1474,10 @@ figma.ui.onmessage = msg => {
     let errors = [];
 
     // checkFills(node, errors);
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
-    newCheckStrokes(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
+    newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
     checkRadius(node, errors, borderRadiusArray);
-    newCheckEffects(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
     return errors;
   }
@@ -1593,14 +1485,7 @@ figma.ui.onmessage = msg => {
   function lintSectionRules(node, libraries) {
     let errors = [];
 
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
     // For some reason section strokes aren't accessible via the API yet.
     // checkStrokes(node, errors);
     checkRadius(node, errors, borderRadiusArray);
@@ -1612,29 +1497,10 @@ figma.ui.onmessage = msg => {
     let errors = [];
 
     checkType(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
 
-    newCheckEffects(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
-    newCheckStrokes(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
+    newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
     return errors;
   }
@@ -1642,29 +1508,10 @@ figma.ui.onmessage = msg => {
   function lintRectangleRules(node, libraries) {
     let errors = [];
 
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
     checkRadius(node, errors, borderRadiusArray);
-    newCheckStrokes(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
-    newCheckEffects(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
+    newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
     return errors;
   }
@@ -1682,20 +1529,8 @@ figma.ui.onmessage = msg => {
         usedRemoteStyles,
         variablesWithGroupedConsumers
       );
-      newCheckStrokes(
-        node,
-        errors,
-        libraries,
-        localStylesLibrary,
-        usedRemoteStyles
-      );
-      newCheckEffects(
-        node,
-        errors,
-        libraries,
-        localStylesLibrary,
-        usedRemoteStyles
-      );
+      newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
+      newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
     }
 
     return errors;
@@ -1704,28 +1539,9 @@ figma.ui.onmessage = msg => {
   function lintShapeRules(node, libraries) {
     let errors = [];
 
-    newCheckFills(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles,
-      colorVariables
-    );
-    newCheckStrokes(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
-    newCheckEffects(
-      node,
-      errors,
-      libraries,
-      localStylesLibrary,
-      usedRemoteStyles
-    );
+    newCheckFills(node, errors, libraries, localStylesLibrary, usedRemoteStyles, colorVariables);
+    newCheckStrokes(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
+    newCheckEffects(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
     return errors;
   }

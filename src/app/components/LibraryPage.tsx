@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/library.css';
 
 const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
-  const hasLibraries = libraries && libraries.length > 0;
-
   const onLibraryImport = () => {
     parent.postMessage({ pluginMessage: { type: 'save-library' } }, '*');
   };
@@ -66,12 +64,11 @@ const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
       </div>
 
       <ul className="library-list">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence>
           {libraries.map((library, index) => (
             <motion.li
               className="library-list-item"
               key={index}
-              positionTransition
               variants={variants}
               initial="initial"
               animate="enter"
@@ -96,7 +93,6 @@ const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
           <motion.li
             className="library-list-item save-library"
             key="import"
-            positionTransition
             onClick={onLibraryImport}
             whileTap={{ scale: 0.98, opacity: 0.8 }}
             variants={variants}

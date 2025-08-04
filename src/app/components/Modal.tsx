@@ -3,10 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const Modal = ({ isOpen, onClose, error }) => {
   const [title, setTitle] = useState('');
-  const inputRef = useRef(); // Create a reference to the input element
+  const inputRef = useRef<HTMLInputElement>(null); // Create a reference to the input element
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && inputRef.current) {
       // Focus the input element when the modal is opened
       inputRef.current.focus();
     }

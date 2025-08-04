@@ -87,13 +87,12 @@ function BulkErrorListItem(props) {
   return (
     <motion.li
       className="error-list-item"
-      positionTransition
       key={error.node.id + props.index}
       variants={variants}
       initial="initial"
       animate="enter"
       exit="exit"
-      type={error.type.toLowerCase()}
+      data-error-type={error.type.toLowerCase()}
     >
       <div className="flex-row" ref={ref} onClick={showMenu}>
         <span className={`error-type error-background-${error.type.toLowerCase()}`}>

@@ -1,9 +1,7 @@
-import * as React from "react";
-import StyleListItem from "./StyleListItem";
+import * as React from 'react';
+import StyleListItem from './StyleListItem';
 
 const StylesPage = ({ stylesInUse }) => {
-  const hasStylesInUse = stylesInUse && stylesInUse.length > 0;
-
   return (
     <div className="styles-overview-wrapper">
       {/* <div>
