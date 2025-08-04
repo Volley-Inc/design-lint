@@ -9,7 +9,7 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "destefanis" # Update with actual GitHub username
+      - "chris" # Updated to current maintainer
     labels:
       - "dependencies"
       - "npm"
