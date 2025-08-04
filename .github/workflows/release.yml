@@ -107,7 +107,8 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           
           # Generate release notes
-          NOTES="## Version $VERSION\n\n"
+          NOTES="## Version $VERSION"
+          NOTES+=$'\n\n'
           
           # Get commit messages since last tag
           if [ -z "$(git tag)" ]; then
@@ -121,8 +122,11 @@ jobs:
             fi
           fi
           
-          # Save to file for the action
-          echo -e "$NOTES" > release-notes.txt
+          # Save release notes to output for the deploy action
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "notes<<$EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
           
       - name: Extract Plugin Info from manifest
         id: plugin_info
@@ -140,7 +144,7 @@ jobs:
         with:
           plugin-id: ${{ steps.plugin_info.outputs.plugin_id }}
           team-id: ${{ steps.plugin_info.outputs.team_id }}
-          release-notes-file: release-notes.txt
+          release-notes: ${{ steps.release_notes.outputs.notes }}
         env:
           FIGMA_EMAIL: ${{ secrets.FIGMA_EMAIL }}
           FIGMA_PASSWORD: ${{ secrets.FIGMA_PASSWORD }}
