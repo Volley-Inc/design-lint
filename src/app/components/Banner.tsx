@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion/dist/framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 function Banner({ totalErrorsWithMatches, handleFixAllErrors }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,21 +32,17 @@ function Banner({ totalErrorsWithMatches, handleFixAllErrors }) {
     <div className="banner-wrapper">
       <div className="banner">
         <span className={`error-type error-background-banner`}>
-          <img src={require("../assets/sparkles.svg")} />
+          <img src={require('../assets/sparkles.svg')} />
         </span>
         <span className="banner-label">
-          Automatic Fixes{" "}
-          <span className="error-description__count">
-            · ({totalErrorsWithMatches})
-          </span>
+          Automatic Fixes{' '}
+          <span className="error-description__count">· ({totalErrorsWithMatches})</span>
         </span>
         <motion.button
           whileTap={{ scale: 0.98, opacity: 0.8 }}
           onClick={handleClick}
           className={
-            isLoading
-              ? "loading-button disabled auto-fix-button"
-              : "loading-button auto-fix-button"
+            isLoading ? 'loading-button disabled auto-fix-button' : 'loading-button auto-fix-button'
           }
         >
           {isLoading ? (

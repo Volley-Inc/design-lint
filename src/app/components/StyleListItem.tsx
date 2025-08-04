@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import StyleListItemContent from "./StyleListItemContent";
-import { motion } from "framer-motion/dist/framer-motion";
+import React, { useState } from 'react';
+import StyleListItemContent from './StyleListItemContent';
+import { motion } from 'framer-motion';
 
 // Duplicate component that matches styleContent but has very small differences to work on the styles page.
 
@@ -8,7 +8,7 @@ function ListItem({ style, index }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
+    setIsOpen((prevIsOpen) => !prevIsOpen);
   };
 
   function handleSelectAll(nodeArray) {
@@ -20,11 +20,11 @@ function ListItem({ style, index }) {
     parent.postMessage(
       {
         pluginMessage: {
-          type: "select-multiple-layers",
-          nodeArray: combinedArray
-        }
+          type: 'select-multiple-layers',
+          nodeArray: combinedArray,
+        },
       },
-      "*"
+      '*'
     );
   }
 
@@ -32,11 +32,11 @@ function ListItem({ style, index }) {
     parent.postMessage(
       {
         pluginMessage: {
-          type: "select-multiple-layers",
-          nodeArray: nodeArray
-        }
+          type: 'select-multiple-layers',
+          nodeArray: nodeArray,
+        },
       },
-      "*"
+      '*'
     );
   }
 
@@ -44,23 +44,17 @@ function ListItem({ style, index }) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 
-  const listItemClass = isOpen
-    ? "overview-list-item"
-    : "overview-list-item list-item--open";
+  const listItemClass = isOpen ? 'overview-list-item' : 'overview-list-item list-item--open';
 
   return (
     <li className={listItemClass} key={`style item - ${style.name}-${index}`}>
       <div className="overview-content">
-        <StyleListItemContent
-          style={style}
-          type={style.type.toLowerCase()}
-          error={style}
-        />
+        <StyleListItemContent style={style} type={style.type.toLowerCase()} error={style} />
         <motion.img
           whileTap={{ scale: 0.9, opacity: 0.8 }}
           onClick={() => handleSelectAll(style.groupedConsumers)}
           className="overview-icon overview-content-select"
-          src={require("../assets/select-all.svg")}
+          src={require('../assets/select-all.svg')}
         />
         {/* <img
           className="overview-icon overview-content-arrow"
@@ -79,7 +73,7 @@ function ListItem({ style, index }) {
               src={require(`../assets/${nodeType.toLowerCase()}.svg`)}
             />
             <span className="sublist-item-label">
-              <span className="sublist-item-count">{nodeIds.length}</span>{" "}
+              <span className="sublist-item-count">{nodeIds.length}</span>{' '}
               {capitalizeFirstLetter(nodeType)} Layers
             </span>
           </li>

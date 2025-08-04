@@ -1,7 +1,7 @@
-import * as React from "react";
-import { motion } from "framer-motion/dist/framer-motion";
-import PanelHeader from "./PanelHeader";
-import "../styles/panel.css";
+import * as React from 'react';
+import { motion } from 'framer-motion';
+import PanelHeader from './PanelHeader';
+import '../styles/panel.css';
 
 // Panel for comparing styles
 function StylesPanel(props) {
@@ -11,7 +11,7 @@ function StylesPanel(props) {
 
   const variants = {
     open: { opacity: 1, x: 0 },
-    closed: { opacity: 0, x: "100%" }
+    closed: { opacity: 0, x: '100%' },
   };
 
   function handleHide() {
@@ -22,16 +22,13 @@ function StylesPanel(props) {
     <React.Fragment>
       <motion.div
         className={`panel`}
-        initial={{ opacity: 0, x: "100%" }}
-        animate={isVisible ? "open" : "closed"}
-        transition={{ duration: 0.3, type: "tween" }}
+        initial={{ opacity: 0, x: '100%' }}
+        animate={isVisible ? 'open' : 'closed'}
+        transition={{ duration: 0.3, type: 'tween' }}
         variants={variants}
         key="styles-panel"
       >
-        <PanelHeader
-          title={"Compare Styles"}
-          handleHide={handleHide}
-        ></PanelHeader>
+        <PanelHeader title={'Compare Styles'} handleHide={handleHide}></PanelHeader>
 
         {/* textObject.font = node.fontName.family;
     textObject.fontStyle = node.fontName.style;
@@ -51,16 +48,12 @@ function StylesPanel(props) {
                 <h4 className="comparison-title">Current</h4>
                 <div className="comparison-row">
                   <div className="comparison-row-item row-item-grow">
-                    <div className="comparison-value">
-                      {props.error.textProperties.font}
-                    </div>
+                    <div className="comparison-value">{props.error.textProperties.font}</div>
                   </div>
                 </div>
                 <div className="comparison-row">
                   <div className="comparison-row-item">
-                    <div className="comparison-value">
-                      {props.error.textProperties.fontStyle}
-                    </div>
+                    <div className="comparison-value">{props.error.textProperties.fontStyle}</div>
                   </div>
                   <div className="comparison-row-item">
                     <div className="comparison-value">
@@ -71,18 +64,13 @@ function StylesPanel(props) {
                 </div>
                 <div className="comparison-row">
                   <div className="comparison-row-item">
-                    <img
-                      className="comparison-icon"
-                      src={require("../assets/line-height.svg")}
-                    />
-                    <div className="comparison-value">
-                      {props.error.textProperties.lineHeight}
-                    </div>
+                    <img className="comparison-icon" src={require('../assets/line-height.svg')} />
+                    <div className="comparison-value">{props.error.textProperties.lineHeight}</div>
                   </div>
                   <div className="comparison-row-item">
                     <img
                       className="comparison-icon"
-                      src={require("../assets/letter-spacing.svg")}
+                      src={require('../assets/letter-spacing.svg')}
                     />
                     <div className="comparison-value">
                       {props.error.textProperties.letterSpacingValue}
@@ -91,7 +79,7 @@ function StylesPanel(props) {
                   <div className="comparison-row-item">
                     <img
                       className="comparison-icon"
-                      src={require("../assets/paragraph-spacing.svg")}
+                      src={require('../assets/paragraph-spacing.svg')}
                     />
                     <div className="comparison-value">
                       {props.error.textProperties.paragraphSpacing}
@@ -122,51 +110,33 @@ function StylesPanel(props) {
                 </div>
               </div>
               <div className="comparison-wrapper">
-                <h4 className="comparison-title">
-                  {error.suggestions[props.suggestion].name}
-                </h4>
+                <h4 className="comparison-title">{error.suggestions[props.suggestion].name}</h4>
                 <div className="comparison-row">
                   <div className="comparison-row-item row-item-grow">
                     <div className="comparison-value">
-                      {
-                        error.suggestions[props.suggestion].textProperties
-                          .fontFamily
-                      }
+                      {error.suggestions[props.suggestion].textProperties.fontFamily}
                     </div>
                   </div>
                 </div>
                 <div className="comparison-row">
                   <div className="comparison-row-item">
                     <div className="comparison-value">
-                      {
-                        error.suggestions[props.suggestion].textProperties
-                          .fontStyle
-                      }
+                      {error.suggestions[props.suggestion].textProperties.fontStyle}
                     </div>
                   </div>
                   <div className="comparison-row-item">
                     <div className="comparison-value">
                       <span className="comparison-label">Size:</span>
-                      {
-                        error.suggestions[props.suggestion].textProperties
-                          .fontSize
-                      }
+                      {error.suggestions[props.suggestion].textProperties.fontSize}
                     </div>
                   </div>
                 </div>
                 <div className="comparison-row">
                   <div className="comparison-row-item">
-                    <img
-                      className="comparison-icon"
-                      src={require("../assets/line-height.svg")}
-                    />
+                    <img className="comparison-icon" src={require('../assets/line-height.svg')} />
                     <div className="comparison-value">
-                      {
-                        error.suggestions[props.suggestion].textProperties
-                          .lineHeight.value
-                      }
-                      {error.suggestions[props.suggestion].textProperties
-                        .lineHeight.value !==
+                      {error.suggestions[props.suggestion].textProperties.lineHeight.value}
+                      {error.suggestions[props.suggestion].textProperties.lineHeight.value !==
                       props.error.textProperties.lineHeight ? (
                         <span className="difference">*</span>
                       ) : null}
@@ -175,15 +145,11 @@ function StylesPanel(props) {
                   <div className="comparison-row-item">
                     <img
                       className="comparison-icon"
-                      src={require("../assets/letter-spacing.svg")}
+                      src={require('../assets/letter-spacing.svg')}
                     />
                     <div className="comparison-value">
-                      {
-                        error.suggestions[props.suggestion].textProperties
-                          .letterSpacing.value
-                      }
-                      {error.suggestions[props.suggestion].textProperties
-                        .letterSpacing.value !==
+                      {error.suggestions[props.suggestion].textProperties.letterSpacing.value}
+                      {error.suggestions[props.suggestion].textProperties.letterSpacing.value !==
                       props.error.textProperties.letterSpacing ? (
                         <span className="difference">*</span>
                       ) : null}
@@ -192,15 +158,11 @@ function StylesPanel(props) {
                   <div className="comparison-row-item">
                     <img
                       className="comparison-icon"
-                      src={require("../assets/paragraph-spacing.svg")}
+                      src={require('../assets/paragraph-spacing.svg')}
                     />
                     <div className="comparison-value">
-                      {
-                        error.suggestions[props.suggestion].textProperties
-                          .paragraphSpacing
-                      }
-                      {error.suggestions[props.suggestion].textProperties
-                        .paragraphSpacing !==
+                      {error.suggestions[props.suggestion].textProperties.paragraphSpacing}
+                      {error.suggestions[props.suggestion].textProperties.paragraphSpacing !==
                       props.error.textProperties.paragraphSpacing ? (
                         <span className="difference">*</span>
                       ) : null}
@@ -211,14 +173,13 @@ function StylesPanel(props) {
                   <div className="comparison-row-item">
                     <div className="comparison-value">
                       <span className="comparison-label">Align:</span>
-                      {error.suggestions[props.suggestion].textProperties
-                        .textAlignHorizontal !== undefined
+                      {error.suggestions[props.suggestion].textProperties.textAlignHorizontal !==
+                      undefined
                         ? error.suggestions[
                             props.suggestion
                           ].textProperties.textAlignHorizontal.toLowerCase()
-                        : "-"}
-                      {error.suggestions[props.suggestion].textProperties
-                        .textAlignHorizontal !==
+                        : '-'}
+                      {error.suggestions[props.suggestion].textProperties.textAlignHorizontal !==
                       props.error.textProperties.textAlignHorizontal ? (
                         <span className="difference">*</span>
                       ) : null}
@@ -227,14 +188,13 @@ function StylesPanel(props) {
                   <div className="comparison-row-item">
                     <div className="comparison-value">
                       <span className="comparison-label">V Align:</span>
-                      {error.suggestions[props.suggestion].textProperties
-                        .textAlignVertical !== undefined
+                      {error.suggestions[props.suggestion].textProperties.textAlignVertical !==
+                      undefined
                         ? error.suggestions[
                             props.suggestion
                           ].textProperties.textAlignVertical.toLowerCase()
-                        : "-"}
-                      {error.suggestions[props.suggestion].textProperties
-                        .textAlignVertical !==
+                        : '-'}
+                      {error.suggestions[props.suggestion].textProperties.textAlignVertical !==
                       props.error.textProperties.textAlignVertical ? (
                         <span className="difference">*</span>
                       ) : null}
@@ -245,11 +205,9 @@ function StylesPanel(props) {
                   <div className="comparison-row-item row-item-grow">
                     <div className="comparison-value">
                       <span className="comparison-label">Case:</span>
-                      {error.suggestions[
-                        props.suggestion
-                      ].textProperties.textCase.toLowerCase()}
-                      {error.suggestions[props.suggestion].textProperties
-                        .textCase !== props.error.textProperties.textCase ? (
+                      {error.suggestions[props.suggestion].textProperties.textCase.toLowerCase()}
+                      {error.suggestions[props.suggestion].textProperties.textCase !==
+                      props.error.textProperties.textCase ? (
                         <span className="difference">*</span>
                       ) : null}
                     </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion/dist/framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 function Button({ error, applyStyle }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +14,7 @@ function Button({ error, applyStyle }) {
     };
   }, [timerId]);
 
-  const handleClick = error => {
+  const handleClick = (error) => {
     if (!isLoading) {
       setIsLoading(true);
 
@@ -31,11 +31,7 @@ function Button({ error, applyStyle }) {
     <motion.button
       whileTap={{ scale: 0.98, opacity: 0.8 }}
       onClick={() => handleClick(error)}
-      className={
-        isLoading
-          ? "loading-button disabled match-button"
-          : "loading-button match-button"
-      }
+      className={isLoading ? 'loading-button disabled match-button' : 'loading-button match-button'}
     >
       {isLoading ? (
         <div className="button-loading-dots match-button-loading">

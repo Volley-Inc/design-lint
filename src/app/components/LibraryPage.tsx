@@ -1,15 +1,15 @@
-import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion/dist/framer-motion";
-import "../styles/library.css";
+import * as React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import '../styles/library.css';
 
 const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
   const hasLibraries = libraries && libraries.length > 0;
 
   const onLibraryImport = () => {
-    parent.postMessage({ pluginMessage: { type: "save-library" } }, "*");
+    parent.postMessage({ pluginMessage: { type: 'save-library' } }, '*');
   };
 
-  const removeLibrary = async index => {
+  const removeLibrary = async (index) => {
     // Remove the library from the libraries array
     const updatedLibraries = [...libraries];
     updatedLibraries.splice(index, 1);
@@ -21,43 +21,35 @@ const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
     parent.postMessage(
       {
         pluginMessage: {
-          type: "remove-library",
+          type: 'remove-library',
           index: index,
-          storageArray: updatedLibraries
-        }
+          storageArray: updatedLibraries,
+        },
       },
-      "*"
+      '*'
     );
   };
 
   const variants = {
     initial: { opacity: 0, y: -12, scale: 1 },
     enter: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, y: -12, scale: 1 }
+    exit: { opacity: 0, y: -12, scale: 1 },
   };
 
   return (
     <div className="library-wrapper">
       <div className="library-description">
         <h4 className="library-title">Local Styles</h4>
-        <p>
-          Design Lint uses styles found in your file for suggestions and
-          automatic fixes first.
-        </p>
+        <p>Design Lint uses styles found in your file for suggestions and automatic fixes first.</p>
       </div>
       <ul className="library-list">
         <li className="library-list-item" key="local-styles">
           <div className="library-icon-wrapper">
-            <img
-              className="library-icon"
-              src={require("../assets/map-marker.svg")}
-            />
+            <img className="library-icon" src={require('../assets/map-marker.svg')} />
           </div>
           <div className="library-list-item-content">
             <h3 className="item-content-title">Local Styles</h3>
-            <span className="item-content-styles">
-              {localStyles.styles} styles
-            </span>
+            <span className="item-content-styles">{localStyles.styles} styles</span>
           </div>
         </li>
       </ul>
@@ -86,23 +78,18 @@ const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
               exit="exit"
             >
               <div className="library-icon-wrapper">
-                <img
-                  className="library-icon"
-                  src={require("../assets/library.svg")}
-                />
+                <img className="library-icon" src={require('../assets/library.svg')} />
               </div>
               <div className="library-list-item-content">
                 <h3 className="item-content-title">{library.name}</h3>
-                <span className="item-content-styles">
-                  {library.styles} styles
-                </span>
+                <span className="item-content-styles">{library.styles} styles</span>
               </div>
               <motion.button
                 onClick={() => removeLibrary(index)}
                 className="icon icon--button library-remove"
                 whileTap={{ scale: 0.9, opacity: 0.8 }}
               >
-                <img src={require("../assets/subtract.svg")} />
+                <img src={require('../assets/subtract.svg')} />
               </motion.button>
             </motion.li>
           ))}
@@ -118,10 +105,7 @@ const LibraryPage = ({ libraries = [], onUpdateLibraries, localStyles }) => {
             exit="exit"
           >
             <div className="library-icon-wrapper">
-              <img
-                className="library-icon"
-                src={require("../assets/add-blue.svg")}
-              />
+              <img className="library-icon" src={require('../assets/add-blue.svg')} />
             </div>
             <h3 className="save-library-label">Save Library</h3>
           </motion.li>

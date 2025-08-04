@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion/dist/framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 function SuggestionButton({ error, index, applyStyle }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,11 +31,7 @@ function SuggestionButton({ error, index, applyStyle }) {
     <motion.button
       whileTap={{ scale: 0.98, opacity: 0.8 }}
       onClick={() => handleClick(error, index)}
-      className={
-        isLoading
-          ? "loading-button disabled match-button"
-          : "loading-button match-button"
-      }
+      className={isLoading ? 'loading-button disabled match-button' : 'loading-button match-button'}
     >
       {isLoading ? (
         <div className="button-loading-dots match-button-loading">

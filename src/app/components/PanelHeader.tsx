@@ -1,5 +1,5 @@
-import * as React from "react";
-import { motion } from "framer-motion/dist/framer-motion";
+import * as React from 'react';
+import { motion } from 'framer-motion';
 
 function PanelHeader(props) {
   return (
@@ -10,10 +10,7 @@ function PanelHeader(props) {
           onClick={props.handleHide}
           whileTap={{ scale: 0.9, opacity: 0.8 }}
         >
-          <img
-            className="panel-collapse-icon"
-            src={require("../assets/forward-arrow.svg")}
-          />
+          <img className="panel-collapse-icon" src={require('../assets/forward-arrow.svg')} />
         </motion.button>
       </div>
       <div className="panel-header__title">{props.title}</div>
