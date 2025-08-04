@@ -1,33 +1,27 @@
-import * as React from "react";
+import * as React from 'react';
 
 function truncateStyle(string) {
-  return string.length > 28 ? string.substring(0, 28) + "..." : string;
+  return string.length > 28 ? string.substring(0, 28) + '...' : string;
 }
 
 const StyleContent = ({ style, type, error }) => {
   const renderStylePreview = () => {
     switch (type) {
-      case "fill":
+      case 'fill':
         return (
-          <div
-            className="style-preview fill-preview"
-            style={{ background: error.fillColor }}
-          ></div>
+          <div className="style-preview fill-preview" style={{ background: error.fillColor }}></div>
         );
-      case "stroke":
+      case 'stroke':
         return (
-          <div
-            className="style-preview fill-preview"
-            style={{ background: error.fillColor }}
-          ></div>
+          <div className="style-preview fill-preview" style={{ background: error.fillColor }}></div>
         );
-      case "text":
+      case 'text':
         return (
           <div className="style-preview text-preview">
             <span style={{ fontWeight: style.fontWeight }}>Ag</span>
           </div>
         );
-      case "effects":
+      case 'effects':
         return (
           <div className="style-preview effect-preview">
             <img
@@ -37,7 +31,7 @@ const StyleContent = ({ style, type, error }) => {
             />
           </div>
         );
-      case "effect":
+      case 'effect':
         return (
           <div className="style-preview effect-preview">
             <img
@@ -52,18 +46,18 @@ const StyleContent = ({ style, type, error }) => {
     }
   };
 
-  const getEffectIcon = effectType => {
+  const getEffectIcon = (effectType) => {
     switch (effectType) {
-      case "DROP_SHADOW":
-        return require("../assets/drop-shadow.svg");
-      case "INNER_SHADOW":
-        return require("../assets/inner-shadow.svg");
-      case "LAYER_BLUR":
-        return require("../assets/layer-blur.svg");
-      case "BACKGROUND_BLUR":
-        return require("../assets/background-blur.svg");
+      case 'DROP_SHADOW':
+        return require('../assets/drop-shadow.svg');
+      case 'INNER_SHADOW':
+        return require('../assets/inner-shadow.svg');
+      case 'LAYER_BLUR':
+        return require('../assets/layer-blur.svg');
+      case 'BACKGROUND_BLUR':
+        return require('../assets/background-blur.svg');
       default:
-        return "";
+        return '';
     }
   };
 

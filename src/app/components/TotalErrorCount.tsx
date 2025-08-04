@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 function TotalErrorCount(props) {
   let totalErrorCount = determineCount(props.errorArray);
@@ -6,7 +6,7 @@ function TotalErrorCount(props) {
   function determineCount(array) {
     let count = 0;
 
-    array.forEach(arrayItem => {
+    array.forEach((arrayItem) => {
       if (arrayItem.errors) {
         count = count + arrayItem.errors.length;
       }
@@ -24,10 +24,7 @@ function TotalErrorCount(props) {
         </div>
       ) : (
         <div className="totals-row totals-row--success">
-          <div className="section-title">
-            {" "}
-            🎉 Yay! No errors in the selection.
-          </div>
+          <div className="section-title"> 🎉 Yay! No errors in the selection.</div>
           <span className="error-count success">
             <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
               <path

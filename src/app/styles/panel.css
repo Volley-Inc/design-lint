@@ -134,7 +134,7 @@
   min-width: 44px;
   border: 1px solid #dcddde;
   border-radius: 16px;
-  font-family: "Inter";
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 10px;
@@ -155,7 +155,7 @@
 
 .pill-divider {
   display: inline-block;
-  font-family: "Inter";
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 10px;
@@ -498,7 +498,7 @@
 /* CSS Preloader */
 .circle {
   display: inline-block;
-  content: "";
+  content: '';
   height: 16px;
   width: 16px;
   border-radius: 50%;

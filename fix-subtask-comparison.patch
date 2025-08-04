@@ -1,0 +1,19 @@
+--- a/scripts/modules/task-manager/update-single-task-status.js
++++ b/scripts/modules/task-manager/update-single-task-status.js
+@@ -32,7 +32,7 @@ async function updateSingleTaskStatus(
+ 
+ 		// Find the parent task
+-		const parentTask = data.tasks.find((t) => t.id === parentId);
++		const parentTask = data.tasks.find((t) => t.id === parentId || t.id === parentId.toString());
+ 		if (!parentTask) {
+ 			throw new Error(`Parent task ${parentId} not found`);
+ 		}
+@@ -42,7 +42,7 @@ async function updateSingleTaskStatus(
+ 			throw new Error(`Parent task ${parentId} has no subtasks`);
+ 		}
+ 
+-		const subtask = parentTask.subtasks.find((st) => st.id === subtaskId);
++		const subtask = parentTask.subtasks.find((st) => st.id === subtaskId || st.id === subtaskId.toString());
+ 		if (!subtask) {
+ 			throw new Error(
+ 				`Subtask ${subtaskId} not found in parent task ${parentId}`

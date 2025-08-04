@@ -1,12 +1,9 @@
-import React, { ReactElement } from "react";
-import { render, RenderOptions } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import React, { ReactElement } from 'react';
+import { render, RenderOptions } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 // Custom render function that includes common providers
-export const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, "wrapper">
-) => {
+export const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
   // Add any providers here (Context, Theme, etc.)
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return <>{children}</>;
@@ -14,12 +11,12 @@ export const customRender = (
 
   return {
     user: userEvent.setup(),
-    ...render(ui, { wrapper: Wrapper, ...options })
+    ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };
 
 // Re-export everything from testing library
-export * from "@testing-library/react";
+export * from '@testing-library/react';
 
 // Override render with custom render
 export { customRender as render };
@@ -28,20 +25,20 @@ export { customRender as render };
 export const generateMockErrors = (count: number) => {
   return Array.from({ length: count }, (_, i) => ({
     id: `error-${i}`,
-    type: ["text-style", "color-style", "effect-style"][i % 3],
+    type: ['text-style', 'color-style', 'effect-style'][i % 3],
     message: `Error message ${i}`,
     value: `Value ${i}`,
     node: {
       id: `node-${i}`,
       name: `Node ${i}`,
-      type: "TEXT" as const
-    }
+      type: 'TEXT' as const,
+    },
   }));
 };
 
 // Common test assertions
 export const expectToBeAccessible = async (container: HTMLElement) => {
-  const results = await import("jest-axe").then(({ axe }) => axe(container));
+  const results = await import('jest-axe').then(({ axe }) => axe(container));
   expect(results).toHaveNoViolations();
 };
 
@@ -58,6 +55,6 @@ export const useFakeTimers = () => {
 
   return {
     advanceTimersByTime: (time: number) => jest.advanceTimersByTime(time),
-    runAllTimers: () => jest.runAllTimers()
+    runAllTimers: () => jest.runAllTimers(),
   };
 };

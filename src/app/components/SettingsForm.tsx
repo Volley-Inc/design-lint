@@ -1,21 +1,21 @@
-import * as React from "react";
-import { useState } from "react";
+import * as React from 'react';
+import { useState } from 'react';
 
 function SettingsForm(props) {
-  const [radiusValue, setRadiusValue] = useState("");
+  const [radiusValue, setRadiusValue] = useState('');
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     if (radiusValue.length) {
       parent.postMessage(
         {
           pluginMessage: {
-            type: "update-border-radius",
-            radiusValues: radiusValue
-          }
+            type: 'update-border-radius',
+            radiusValues: radiusValue,
+          },
         },
-        "*"
+        '*'
       );
     }
   };
@@ -24,10 +24,10 @@ function SettingsForm(props) {
     parent.postMessage(
       {
         pluginMessage: {
-          type: "reset-border-radius"
-        }
+          type: 'reset-border-radius',
+        },
       },
-      "*"
+      '*'
     );
   }
 
@@ -36,8 +36,7 @@ function SettingsForm(props) {
       <div className="settings-form" onSubmit={handleSubmit}>
         <h3 className="settings-title">Border Radius</h3>
         <div className="settings-label">
-          Set your preferred border radius values separated by commas (ex: "2,
-          4, 6, 8").
+          Set your preferred border radius values separated by commas (ex: "2, 4, 6, 8").
         </div>
 
         <div className="input-icon">
@@ -48,7 +47,7 @@ function SettingsForm(props) {
             type="input"
             className="input-icon__input"
             value={radiusValue}
-            onChange={e => setRadiusValue(e.target.value)}
+            onChange={(e) => setRadiusValue(e.target.value)}
             placeholder={props.borderRadiusValues}
           />
         </div>

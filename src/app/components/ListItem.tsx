@@ -1,5 +1,5 @@
-import * as React from "react";
-import classNames from "classnames";
+import * as React from 'react';
+import classNames from 'classnames';
 
 function ListItem(props) {
   const { onClick } = props;
@@ -11,8 +11,8 @@ function ListItem(props) {
   let filteredErrorArray = props.errorArray;
 
   // Check to see if this node has corresponding errors.
-  if (filteredErrorArray.some(e => e.id === node.id)) {
-    errorObject = filteredErrorArray.find(e => e.id === node.id);
+  if (filteredErrorArray.some((e) => e.id === node.id)) {
+    errorObject = filteredErrorArray.find((e) => e.id === node.id);
   }
 
   // The component calls itself if there are children
@@ -21,7 +21,7 @@ function ListItem(props) {
     childErrorsCount = findNestedErrors(node);
 
     let reversedArray = node.children.slice().reverse();
-    childNodes = reversedArray.map(function(childNode) {
+    childNodes = reversedArray.map(function (childNode) {
       return (
         <ListItem
           ignoredErrorArray={props.ignoredErrorArray}
@@ -41,11 +41,9 @@ function ListItem(props) {
   function findNestedErrors(node) {
     let errorCount = 0;
 
-    node.children.forEach(childNode => {
-      if (filteredErrorArray.some(e => e.id === childNode.id)) {
-        let childErrorObject = filteredErrorArray.find(
-          e => e.id === childNode.id
-        );
+    node.children.forEach((childNode) => {
+      if (filteredErrorArray.some((e) => e.id === childNode.id)) {
+        let childErrorObject = filteredErrorArray.find((e) => e.id === childNode.id);
         errorCount = errorCount + childErrorObject.errors.length;
       }
 
@@ -61,10 +59,10 @@ function ListItem(props) {
     <li
       id={node.id}
       className={classNames(`list-item`, {
-        "list-item--active": props.activeNodeIds.includes(node.id),
-        "list-item--selected": props.selectedListItems.includes(node.id)
+        'list-item--active': props.activeNodeIds.includes(node.id),
+        'list-item--selected': props.selectedListItems.includes(node.id),
       })}
-      onClick={event => {
+      onClick={(event) => {
         event.stopPropagation();
         onClick(node.id);
       }}
@@ -72,14 +70,11 @@ function ListItem(props) {
       <div className="list-flex-row">
         <span className="list-arrow">
           {childNodes ? (
-            <img
-              className="list-arrow-icon"
-              src={require("../assets/caret.svg")}
-            />
+            <img className="list-arrow-icon" src={require('../assets/caret.svg')} />
           ) : null}
         </span>
         <span className="list-icon">
-          <img src={require("../assets/" + node.type.toLowerCase() + ".svg")} />
+          <img src={require('../assets/' + node.type.toLowerCase() + '.svg')} />
         </span>
         <span className="list-name">{node.name}</span>
         {childErrorsCount >= 1 && <span className="dot"></span>}

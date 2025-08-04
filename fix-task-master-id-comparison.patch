@@ -1,0 +1,10 @@
+--- a/scripts/modules/task-manager/update-single-task-status.js
++++ b/scripts/modules/task-manager/update-single-task-status.js
+@@ -91,7 +91,7 @@ async function updateSingleTaskStatus(
+ 		// Handle regular task
+ 		const taskId = parseInt(taskIdInput, 10);
+-		const task = data.tasks.find((t) => t.id === taskId);
++		const task = data.tasks.find((t) => t.id === taskId || t.id === taskIdInput);
+ 
+ 		if (!task) {
+ 			throw new Error(`Task ${taskId} not found`);
