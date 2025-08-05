@@ -1,0 +1,197 @@
+name: Test Figma Authentication
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-auth:
+    name: Test Figma Authentication
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          
+      - name: Create auth test script
+        run: |
+          cat > test-auth.js << 'EOF'
+          const https = require('https');
+          const crypto = require('crypto');
+
+          // Generate TOTP
+          function generateTOTP(secret, timeStep = 30, digits = 6) {
+            console.log('TOTP Secret length:', secret.length);
+            console.log('TOTP Secret (first 4 chars):', secret.substring(0, 4) + '...');
+            
+            // Try different formats
+            const formats = [
+              { name: 'Original', secret: secret },
+              { name: 'No spaces', secret: secret.replace(/\s/g, '') },
+              { name: 'Uppercase no spaces', secret: secret.replace(/\s/g, '').toUpperCase() },
+              { name: 'Base32 padded', secret: secret.replace(/\s/g, '').toUpperCase().padEnd(Math.ceil(secret.length / 8) * 8, '=') }
+            ];
+            
+            for (const format of formats) {
+              try {
+                console.log(`\nTrying format: ${format.name}`);
+                const code = generateTOTPCode(format.secret, timeStep, digits);
+                console.log(`Generated code: ${code}`);
+                return { code, format: format.name };
+              } catch (e) {
+                console.log(`Failed: ${e.message}`);
+              }
+            }
+            throw new Error('All TOTP formats failed');
+          }
+
+          function generateTOTPCode(secret, timeStep, digits) {
+            const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let bits = '';
+            
+            for (let i = 0; i < secret.length; i++) {
+              const char = secret.charAt(i);
+              if (char === '=') continue; // Skip padding
+              const val = base32chars.indexOf(char);
+              if (val === -1) throw new Error(`Invalid base32 character: ${char}`);
+              bits += val.toString(2).padStart(5, '0');
+            }
+            
+            const bytes = [];
+            for (let i = 0; i + 8 <= bits.length; i += 8) {
+              bytes.push(parseInt(bits.substr(i, 8), 2));
+            }
+            const key = Buffer.from(bytes);
+            
+            const epoch = Math.floor(Date.now() / 1000);
+            const time = Math.floor(epoch / timeStep);
+            console.log(`Time counter: ${time} (epoch: ${epoch})`);
+            
+            const timeBuffer = Buffer.alloc(8);
+            let tmp = time;
+            for (let i = 7; i >= 0; i--) {
+              timeBuffer[i] = tmp & 0xff;
+              tmp = tmp >> 8;
+            }
+            
+            const hmac = crypto.createHmac('sha1', key);
+            hmac.update(timeBuffer);
+            const hash = hmac.digest();
+            
+            const offset = hash[hash.length - 1] & 0xf;
+            const code = (
+              ((hash[offset] & 0x7f) << 24) |
+              ((hash[offset + 1] & 0xff) << 16) |
+              ((hash[offset + 2] & 0xff) << 8) |
+              (hash[offset + 3] & 0xff)
+            ) % Math.pow(10, digits);
+            
+            return code.toString().padStart(digits, '0');
+          }
+
+          async function testLogin(email, password, totpSecret) {
+            console.log('\n=== Testing Figma Authentication ===');
+            console.log('Email:', email);
+            console.log('Has password:', !!password);
+            console.log('Has TOTP secret:', !!totpSecret);
+            
+            let twoFactorCode = '';
+            let totpFormat = '';
+            
+            if (totpSecret) {
+              try {
+                const result = generateTOTP(totpSecret);
+                twoFactorCode = result.code;
+                totpFormat = result.format;
+              } catch (e) {
+                console.error('TOTP generation failed:', e.message);
+              }
+            }
+            
+            // Try with and without 2FA code
+            const attempts = [
+              { name: 'With 2FA', data: { email, password, two_factor_code: twoFactorCode } },
+              { name: 'Without 2FA', data: { email, password } }
+            ];
+            
+            for (const attempt of attempts) {
+              console.log(`\n--- Attempt: ${attempt.name} ---`);
+              if (attempt.data.two_factor_code) {
+                console.log(`Using TOTP (${totpFormat}):`, attempt.data.two_factor_code);
+              }
+              
+              const response = await makeRequest(attempt.data);
+              console.log('Status:', response.status);
+              console.log('Response:', JSON.stringify(response.data, null, 2));
+              
+              if (response.status === 200) {
+                console.log('✅ Authentication successful!');
+                return;
+              }
+            }
+          }
+
+          function makeRequest(data) {
+            return new Promise((resolve) => {
+              const postData = JSON.stringify(data);
+              const options = {
+                hostname: 'www.figma.com',
+                path: '/api/session/login',
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Content-Length': Buffer.byteLength(postData),
+                  'User-Agent': 'Mozilla/5.0'
+                }
+              };
+              
+              const req = https.request(options, (res) => {
+                let responseData = '';
+                res.on('data', chunk => responseData += chunk);
+                res.on('end', () => {
+                  try {
+                    resolve({ status: res.statusCode, data: JSON.parse(responseData) });
+                  } catch (e) {
+                    resolve({ status: res.statusCode, data: responseData });
+                  }
+                });
+              });
+              
+              req.on('error', error => {
+                resolve({ status: 0, data: { error: error.message } });
+              });
+              
+              req.write(postData);
+              req.end();
+            });
+          }
+
+          // Main
+          testLogin(
+            process.env.FIGMA_EMAIL,
+            process.env.FIGMA_PASSWORD,
+            process.env.FIGMA_TOTP_SECRET
+          ).catch(console.error);
+          EOF
+          
+      - name: Run authentication test
+        env:
+          FIGMA_EMAIL: ${{ secrets.FIGMA_EMAIL }}
+          FIGMA_PASSWORD: ${{ secrets.FIGMA_PASSWORD }}
+          FIGMA_TOTP_SECRET: ${{ secrets.FIGMA_TOTP_SECRET }}
+        run: node test-auth.js
+        
+      - name: Test with deployment action
+        uses: typper-io/figma-plugin-deploy@v1
+        with:
+          plugin-id: "1534296567356005263"
+          release-notes: "Test authentication"
+        env:
+          FIGMA_EMAIL: ${{ secrets.FIGMA_EMAIL }}
+          FIGMA_PASSWORD: ${{ secrets.FIGMA_PASSWORD }}
+          FIGMA_TOTP_SECRET: ${{ secrets.FIGMA_TOTP_SECRET }}
+        continue-on-error: true

@@ -25,4 +25,7 @@ node_modules/
 
 # Task files
 # tasks.json
-# tasks/ 
+# tasks/
+
+# Test files
+test-figma-auth.js 
