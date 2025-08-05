@@ -33,13 +33,14 @@ jobs:
               { name: 'Original', secret: secret },
               { name: 'No spaces', secret: secret.replace(/\s/g, '') },
               { name: 'Uppercase no spaces', secret: secret.replace(/\s/g, '').toUpperCase() },
-              { name: 'Base32 padded', secret: secret.replace(/\s/g, '').toUpperCase().padEnd(Math.ceil(secret.length / 8) * 8, '=') }
+              { name: 'Base32 padded', secret: secret.replace(/\s/g, '').toUpperCase().padEnd(Math.ceil(secret.length / 8) * 8, '=') },
+              { name: 'Hex format', secret: secret, isHex: true }
             ];
             
             for (const format of formats) {
               try {
                 console.log(`\nTrying format: ${format.name}`);
-                const code = generateTOTPCode(format.secret, timeStep, digits);
+                const code = generateTOTPCode(format.secret, timeStep, digits, format.isHex);
                 console.log(`Generated code: ${code}`);
                 return { code, format: format.name };
               } catch (e) {
@@ -49,23 +50,38 @@ jobs:
             throw new Error('All TOTP formats failed');
           }
 
-          function generateTOTPCode(secret, timeStep, digits) {
-            const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-            let bits = '';
+          function generateTOTPCode(secret, timeStep, digits, isHex = false) {
+            let key;
             
-            for (let i = 0; i < secret.length; i++) {
-              const char = secret.charAt(i);
-              if (char === '=') continue; // Skip padding
-              const val = base32chars.indexOf(char);
-              if (val === -1) throw new Error(`Invalid base32 character: ${char}`);
-              bits += val.toString(2).padStart(5, '0');
+            if (isHex) {
+              // Handle hex format
+              if (secret.length % 2 !== 0) {
+                throw new Error('Hex secret must have even length');
+              }
+              const bytes = [];
+              for (let i = 0; i < secret.length; i += 2) {
+                bytes.push(parseInt(secret.substr(i, 2), 16));
+              }
+              key = Buffer.from(bytes);
+            } else {
+              // Handle base32 format
+              const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+              let bits = '';
+              
+              for (let i = 0; i < secret.length; i++) {
+                const char = secret.charAt(i);
+                if (char === '=') continue; // Skip padding
+                const val = base32chars.indexOf(char);
+                if (val === -1) throw new Error(`Invalid base32 character: ${char}`);
+                bits += val.toString(2).padStart(5, '0');
+              }
+              
+              const bytes = [];
+              for (let i = 0; i + 8 <= bits.length; i += 8) {
+                bytes.push(parseInt(bits.substr(i, 8), 2));
+              }
+              key = Buffer.from(bytes);
             }
-            
-            const bytes = [];
-            for (let i = 0; i + 8 <= bits.length; i += 8) {
-              bytes.push(parseInt(bits.substr(i, 8), 2));
-            }
-            const key = Buffer.from(bytes);
             
             const epoch = Math.floor(Date.now() / 1000);
             const time = Math.floor(epoch / timeStep);
