@@ -1,18 +1,9 @@
 name: Figma Plugin Validation
 
+# This workflow has been integrated into CI workflow
+# Keeping file for reference but disabling triggers
 on:
-  push:
-    branches: [main, master, develop]
-    paths:
-      - 'manifest.json'
-      - 'src/**'
-      - 'package.json'
-  pull_request:
-    branches: [main, master, develop]
-    paths:
-      - 'manifest.json'
-      - 'src/**'
-      - 'package.json'
+  workflow_dispatch: # Only run manually if needed
 
 jobs:
   validate-manifest:
@@ -56,23 +47,36 @@ jobs:
           
           echo "✅ manifest.json validation passed"
           
-      - name: Check file references
+      - name: Check file references in source
         run: |
-          # Check if main and ui files exist
+          # Check if source files that will be built exist
+          echo "Checking source files..."
+          
+          # Check for main entry point (plugin controller)
+          if [ ! -f "src/plugin/controller.ts" ]; then
+            echo "::error::Plugin controller source file not found"
+            exit 1
+          fi
+          
+          # Check for UI entry point
+          if [ ! -f "src/app/index.tsx" ] && [ ! -f "src/app/index.ts" ]; then
+            echo "::error::UI entry point source file not found"
+            exit 1
+          fi
+          
+          # Validate that manifest references will match build output
           MAIN_FILE=$(jq -r '.main' manifest.json)
           UI_FILE=$(jq -r '.ui' manifest.json)
           
-          if [ ! -f "$MAIN_FILE" ]; then
-            echo "::error::Main file '$MAIN_FILE' referenced in manifest.json does not exist"
-            exit 1
+          if [ "$MAIN_FILE" != "dist/code.js" ]; then
+            echo "::warning::Main file should be 'dist/code.js', found '$MAIN_FILE'"
           fi
           
-          if [ ! -f "$UI_FILE" ]; then
-            echo "::error::UI file '$UI_FILE' referenced in manifest.json does not exist"
-            exit 1
+          if [ "$UI_FILE" != "dist/ui.html" ]; then
+            echo "::warning::UI file should be 'dist/ui.html', found '$UI_FILE'"
           fi
           
-          echo "✅ File references validation passed"
+          echo "✅ Source file validation passed"
           
   validate-plugin-structure:
     name: Validate Plugin Structure

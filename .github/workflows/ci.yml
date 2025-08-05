@@ -11,6 +11,57 @@ env:
   NODE_VERSION: '18.x'
 
 jobs:
+  validate-figma:
+    name: Validate Figma Plugin
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Validate manifest.json
+        run: |
+          echo "Validating manifest.json..."
+          
+          # Check if manifest.json exists
+          if [ ! -f "manifest.json" ]; then
+            echo "::error::manifest.json not found"
+            exit 1
+          fi
+          
+          # Validate JSON syntax
+          if ! jq empty manifest.json 2>/dev/null; then
+            echo "::error::manifest.json is not valid JSON"
+            exit 1
+          fi
+          
+          # Check required fields
+          REQUIRED_FIELDS=("name" "id" "api" "main" "ui")
+          for field in "${REQUIRED_FIELDS[@]}"; do
+            if ! jq -e ".$field" manifest.json > /dev/null; then
+              echo "::error::Required field '$field' is missing from manifest.json"
+              exit 1
+            fi
+          done
+          
+          echo "✅ manifest.json validation passed"
+          
+      - name: Check source files
+        run: |
+          # Check for main entry point (plugin controller)
+          if [ ! -f "src/plugin/controller.ts" ]; then
+            echo "::error::Plugin controller source file not found"
+            exit 1
+          fi
+          
+          # Check for UI entry point
+          if [ ! -f "src/app/index.tsx" ] && [ ! -f "src/app/index.ts" ]; then
+            echo "::error::UI entry point source file not found"
+            exit 1
+          fi
+          
+          echo "✅ Source file validation passed"
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -46,7 +97,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, validate-figma]
     
     steps:
       - name: Checkout repository

@@ -1,0 +1,118 @@
+name: Quick Figma Auth Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Figma Authentication
+        run: |
+          cat > test.js << 'EOF'
+          const https = require('https');
+          const crypto = require('crypto');
+          
+          function generateTOTP(secret, timeStep = 30, digits = 6) {
+            // Base32 decode
+            const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let bits = '';
+            for (let i = 0; i < secret.length; i++) {
+              const val = base32chars.indexOf(secret.charAt(i));
+              if (val === -1) throw new Error('Invalid base32 character');
+              bits += val.toString(2).padStart(5, '0');
+            }
+            
+            const bytes = [];
+            for (let i = 0; i + 8 <= bits.length; i += 8) {
+              bytes.push(parseInt(bits.substr(i, 8), 2));
+            }
+            const key = Buffer.from(bytes);
+            
+            const epoch = Math.floor(Date.now() / 1000);
+            const time = Math.floor(epoch / timeStep);
+            
+            const timeBuffer = Buffer.alloc(8);
+            let tmp = time;
+            for (let i = 7; i >= 0; i--) {
+              timeBuffer[i] = tmp & 0xff;
+              tmp = tmp >> 8;
+            }
+            
+            const hmac = crypto.createHmac('sha1', key);
+            hmac.update(timeBuffer);
+            const hash = hmac.digest();
+            
+            const offset = hash[hash.length - 1] & 0xf;
+            const code = (
+              ((hash[offset] & 0x7f) << 24) |
+              ((hash[offset + 1] & 0xff) << 16) |
+              ((hash[offset + 2] & 0xff) << 8) |
+              (hash[offset + 3] & 0xff)
+            ) % Math.pow(10, digits);
+            
+            return code.toString().padStart(digits, '0');
+          }
+          
+          async function test() {
+            const email = process.env.FIGMA_EMAIL;
+            const password = process.env.FIGMA_PASSWORD;
+            const totpSecret = 'OALX5VFFSSHGEY3WTQIMFY76KQ7JYKDN';
+            
+            console.log('Testing with new TOTP secret...');
+            const code = generateTOTP(totpSecret);
+            console.log('Generated TOTP code:', code);
+            
+            const postData = JSON.stringify({
+              email: email,
+              password: password,
+              two_factor_code: code
+            });
+            
+            const options = {
+              hostname: 'www.figma.com',
+              path: '/api/session/login',
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData),
+                'User-Agent': 'Mozilla/5.0'
+              }
+            };
+            
+            return new Promise((resolve, reject) => {
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  console.log('Status:', res.statusCode);
+                  try {
+                    const response = JSON.parse(data);
+                    console.log('Response:', JSON.stringify(response, null, 2));
+                    if (res.statusCode === 200) {
+                      console.log('✅ Authentication successful with new TOTP secret!');
+                      resolve();
+                    } else {
+                      console.log('❌ Authentication failed');
+                      reject(new Error('Auth failed'));
+                    }
+                  } catch (e) {
+                    console.log('Raw response:', data);
+                    reject(e);
+                  }
+                });
+              });
+              
+              req.on('error', reject);
+              req.write(postData);
+              req.end();
+            });
+          }
+          
+          test().catch(() => process.exit(1));
+          EOF
+          
+          node test.js
+        env:
+          FIGMA_EMAIL: ${{ secrets.FIGMA_EMAIL }}
+          FIGMA_PASSWORD: ${{ secrets.FIGMA_PASSWORD }}
