@@ -62,9 +62,12 @@ jobs:
               run.name.includes('Lint')
             );
             
-            // Check if any CI jobs failed
+            // Check if any CI jobs failed (excluding skipped)
             const failedRuns = ciRuns.filter(run => 
-              run.status === 'completed' && run.conclusion !== 'success'
+              run.status === 'completed' && 
+              run.conclusion !== 'success' && 
+              run.conclusion !== 'skipped' &&
+              run.conclusion !== 'neutral'
             );
             
             if (failedRuns.length > 0) {
