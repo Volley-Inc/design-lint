@@ -10,11 +10,80 @@ on:
         description: 'Release version (e.g., v1.2.3)'
         required: true
         type: string
+      skip_checks:
+        description: 'Skip CI checks (use with caution)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
+  verify-ci:
+    name: Verify CI Status
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_checks }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get commit SHA for tag
+        id: get_sha
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            COMMIT_SHA="${{ github.sha }}"
+          else
+            # For workflow_dispatch, get the current HEAD
+            COMMIT_SHA=$(git rev-parse HEAD)
+          fi
+          echo "sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "Checking CI status for commit: $COMMIT_SHA"
+          
+      - name: Check CI workflow status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = '${{ steps.get_sha.outputs.sha }}';
+            
+            // Get all check runs for this commit
+            const { data: checkRuns } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: sha
+            });
+            
+            // Filter for CI workflow
+            const ciRuns = checkRuns.check_runs.filter(run => 
+              run.name.includes('CI') || 
+              run.name.includes('Test') || 
+              run.name.includes('Build') ||
+              run.name.includes('TypeScript Check') ||
+              run.name.includes('Lint')
+            );
+            
+            // Check if any CI jobs failed
+            const failedRuns = ciRuns.filter(run => 
+              run.status === 'completed' && run.conclusion !== 'success'
+            );
+            
+            if (failedRuns.length > 0) {
+              console.log('Failed CI checks:', failedRuns.map(r => ({
+                name: r.name,
+                conclusion: r.conclusion
+              })));
+              core.setFailed('CI checks failed. Fix issues before releasing.');
+            } else if (ciRuns.length === 0) {
+              core.warning('No CI checks found for this commit. Proceeding with caution.');
+            } else {
+              console.log('All CI checks passed!');
+            }
+
   build-and-release:
     name: Build and Create Release
     runs-on: ubuntu-latest
+    needs: [verify-ci]
+    if: ${{ always() && (needs.verify-ci.result == 'success' || inputs.skip_checks) }}
     permissions:
       contents: write
       
@@ -80,8 +149,8 @@ jobs:
   publish-to-figma:
     name: Publish to Figma Community
     runs-on: ubuntu-latest
-    needs: build-and-release
-    if: ${{ !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-alpha') }}
+    needs: [verify-ci, build-and-release]
+    if: ${{ always() && needs.build-and-release.result == 'success' && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-alpha') }}
     
     steps:
       - name: Checkout repository
